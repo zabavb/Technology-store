@@ -8,15 +8,15 @@ namespace Library.Models
 {
     public class Product
     {
-        private int Id { get; }
-        private string Brand { get; set; } = string.Empty;
-        private string Model { get; set; } = string.Empty;
-        private string Name { get; set; } = string.Empty;
-        private string Producer { get; set; } = string.Empty;
-        private double Price { get; set; }
-        private string? Details { get; set; } = string.Empty;
+        public long Id { get; set; }
+        public string Brand { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Producer { get; set; } = string.Empty;
+        public double Price { get; set; }
+        public string? Details { get; set; } = string.Empty;
 
-        public Product(int id, string brand, string model, string producer, double price, string? details)
+        public Product(long id, string brand, string model, string producer, double price, string? details)
         {
             Id = id;
             Brand = brand;
