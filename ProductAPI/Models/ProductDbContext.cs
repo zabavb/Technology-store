@@ -8,7 +8,7 @@ namespace ProductAPI.Models
 {
     public class ProductDbContext : DbContext
     {
-        public DbSet<Product> Employees { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options)
         {
