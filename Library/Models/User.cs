@@ -8,15 +8,15 @@ namespace Library.Models
 {
     public class User
     {
-        private long Id { get; set; }
-        private string Username { get; set; } = string.Empty;
-        private string? FirstName { get; set; } = string.Empty;
-        private string? LastName { get; set; } = string.Empty;
-        private int? Age { get; set; }
-        private string Email { get; set; } = string.Empty;
-        private string Phone { get; set; } = string.Empty;
-        private string Password { get; set; } = string.Empty;
-        private RoleType Role { get; set; } = RoleType.Guest;
+        public long Id { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string? FirstName { get; set; } = string.Empty;
+        public string? LastName { get; set; } = string.Empty;
+        public int? Age { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public RoleType Role { get; set; } = RoleType.Guest;
 
         public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, RoleType role)
         {
