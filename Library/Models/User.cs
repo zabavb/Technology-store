@@ -16,9 +16,9 @@ namespace Library.Models
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public RoleType Role { get; set; } = RoleType.Guest;
+        public string? Role { get; set; } = RoleType.Guest.ToString();
 
-        public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, RoleType role)
+        public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role)
         {
             Id = id;
             Username = username;
