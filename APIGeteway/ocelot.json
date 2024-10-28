@@ -2,7 +2,7 @@
   "Routes": [
     //================== Product API ==================
     {
-      "DownstreamPathTemplate": "/api/product",
+      "DownstreamPathTemplate": "/api/products",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -10,11 +10,11 @@
           "Port": 7063
         }
       ],
-      "UpstreamPathTemplate": "/gateway/product",
+      "UpstreamPathTemplate": "/gateway/products",
       "UpstreamHttpMethod": [ "POST", "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/product/{id}",
+      "DownstreamPathTemplate": "/api/products/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -22,12 +22,12 @@
           "Port": 7063
         }
       ],
-      "UpstreamPathTemplate": "/gateway/product/{id}",
+      "UpstreamPathTemplate": "/gateway/products/{id}",
       "UpstreamHttpMethod": [ "DELETE", "PUT", "GET" ]
     },
     //================== User API ==================
     {
-      "DownstreamPathTemplate": "/api/user",
+      "DownstreamPathTemplate": "/api/users",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -35,11 +35,11 @@
           "Port": 7114
         }
       ],
-      "UpstreamPathTemplate": "/gateway/user",
+      "UpstreamPathTemplate": "/gateway/users",
       "UpstreamHttpMethod": [ "POST", "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user/{id}",
+      "DownstreamPathTemplate": "/api/users/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -47,7 +47,7 @@
           "Port": 7114
         }
       ],
-      "UpstreamPathTemplate": "/gateway/user/{id}",
+      "UpstreamPathTemplate": "/gateway/users/{id}",
       "UpstreamHttpMethod": [ "DELETE", "PUT", "GET" ]
     }
   ]
