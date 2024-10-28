@@ -39,6 +39,18 @@
       "UpstreamHttpMethod": [ "POST", "GET" ]
     },
     {
+      "DownstreamPathTemplate": "/api/users/hashpassword",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/hashpassword",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/users/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
