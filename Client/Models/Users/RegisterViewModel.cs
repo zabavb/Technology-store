@@ -1,7 +1,7 @@
 ﻿using Library.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Client.Models
+namespace Client.Models.Users
 {
     public class RegisterViewModel
     {
@@ -12,7 +12,7 @@ namespace Client.Models
         [Display(Name = "First name")]
         [StringLength(32, MinimumLength = 2, ErrorMessage = "First name must be in range between 2 and 32 characters")]
         public string? FirstName { get; set; } = string.Empty;
-        
+
         [Display(Name = "Last name")]
         [StringLength(32, MinimumLength = 2, ErrorMessage = "Last name must be in range between 2 and 32 characters")]
         public string? LastName { get; set; } = string.Empty;
@@ -23,7 +23,7 @@ namespace Client.Models
         [Required(ErrorMessage = "Email is required")]
         [DataType(DataType.EmailAddress, ErrorMessage = "Incorrect email address")]
         public string Email { get; set; } = string.Empty;
-        
+
         [Required(ErrorMessage = "Phone number is required")]
         [Display(Name = "Phone number")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Incorrect phone number")]

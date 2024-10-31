@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Client.Models
+namespace Client.Models.Users
 {
     public class LoginViewModel
     {
