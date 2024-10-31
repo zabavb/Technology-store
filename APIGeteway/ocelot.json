@@ -27,7 +27,7 @@
     },
     //================== User API ==================
     {
-      "DownstreamPathTemplate": "/api/users",
+      "DownstreamPathTemplate": "/api/users/",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -35,20 +35,8 @@
           "Port": 7114
         }
       ],
-      "UpstreamPathTemplate": "/gateway/users",
+      "UpstreamPathTemplate": "/gateway/users/",
       "UpstreamHttpMethod": [ "POST", "GET" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/users/hashpassword",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7114
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/users/hashpassword",
-      "UpstreamHttpMethod": [ "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/users/{id}",

@@ -48,20 +48,6 @@ namespace UserAPI.Controllers
             return user;
         }
 
-        // POST: api/Users/HashPassword
-        [HttpPost("HashPassword")]
-        public async Task<IActionResult> HashPassword([FromBody] string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] hashBytes = sha256.ComputeHash(passwordBytes);
-                string hashedPassword = Convert.ToBase64String(hashBytes);
-
-                return Ok(hashedPassword);
-            }
-        }
-
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
