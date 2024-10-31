@@ -5,7 +5,7 @@ namespace Client.Models.Users
 {
     public class ManageUserViewModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Required(ErrorMessage = "Username is required")]
         [StringLength(16, MinimumLength = 4, ErrorMessage = "Username must be in range between 4 and 16 characters")]
@@ -45,7 +45,7 @@ namespace Client.Models.Users
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = RoleType.User.ToString();
 
-        public ManageUserViewModel(int id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string confirmPassword, string role)
+        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string confirmPassword, string role)
         {
             Id = id;
             Username = username;
