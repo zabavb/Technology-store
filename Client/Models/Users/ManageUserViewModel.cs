@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Client.Models.Users
 {
-    public class ManageViewModel
+    public class ManageUserViewModel
     {
         public int Id { get; set; }
 
@@ -45,7 +45,7 @@ namespace Client.Models.Users
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = RoleType.User.ToString();
 
-        public ManageViewModel(int id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string confirmPassword, string role)
+        public ManageUserViewModel(int id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string confirmPassword, string role)
         {
             Id = id;
             Username = username;
@@ -59,6 +59,6 @@ namespace Client.Models.Users
             Role = role;
         }
 
-        public ManageViewModel() { }
+        public ManageUserViewModel() { }
     }
 }
