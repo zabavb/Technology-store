@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Test get products</title>
+</head>
+<body>
+    <h1>Hello world!</h1>
+    <div id="result"></div>
+    <button id="but1">GetProducts</button>
+    <script>
+        const btn = document.getElementById("but1");
+        const div = document.getElementById("result");
+        btn.addEventListener("click", function() {
+    fetch("https://localhost:7074/gateway/users")
+                .then(resp => resp.json())
+                .then(res => div.innerText = JSON.stringify(res))
+                .catch(ex => console.log(ex));
+
+        });
+    </script>
+</body>
+</html>
