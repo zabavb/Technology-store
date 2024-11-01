@@ -45,6 +45,8 @@ namespace Client.Models.Users
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = RoleType.User.ToString();
 
+        public List<Product> Basket { get; set; } = new();
+
         public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string confirmPassword, string role)
         {
             Id = id;

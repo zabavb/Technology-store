@@ -17,6 +17,21 @@ namespace Library.Models
         public string Phone { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string? Role { get; set; } = RoleType.Guest.ToString();
+        public List<Product> Basket { get; set; }
+
+        public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role, List<Product> basket)
+        {
+            Id = id;
+            Username = username;
+            FirstName = firstName;
+            LastName = lastName;
+            Age = age;
+            Email = email;
+            Phone = phone;
+            Password = password;
+            Role = role;
+            Basket = basket;
+        }
 
         public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role)
         {
