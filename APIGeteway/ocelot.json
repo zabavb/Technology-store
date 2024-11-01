@@ -49,6 +49,18 @@
       ],
       "UpstreamPathTemplate": "/gateway/users/{id}",
       "UpstreamHttpMethod": [ "DELETE", "PUT", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{username}/{password}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{username}/{password}",
+      "UpstreamHttpMethod": [ "GET" ]
     }
   ]
 }
