@@ -9,6 +9,7 @@ using Library.Models;
 using UserAPI.Models;
 using System.Text;
 using System.Security.Cryptography;
+using Library.Infrastructure;
 
 namespace UserAPI.Controllers
 {
@@ -41,6 +42,25 @@ namespace UserAPI.Controllers
                 return NotFound();
 
             var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            return user;
+        }
+
+        // GET: api/Users/Username/Password
+        [HttpGet("{username}, {password}")]
+        public async Task<ActionResult<User>> GetUserByUsernamePassword(string username, string password)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            string hashedPassword = UserExtension.HashPassword(password);
+            var user = await _context.Users.FirstOrDefaultAsync(
+                u => u.Username.Equals(username) &&
+                u.Password.Equals(hashedPassword)
+            );
 
             if (user == null)
                 return NotFound();

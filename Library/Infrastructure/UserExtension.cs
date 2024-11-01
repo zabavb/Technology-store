@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace UserAPI.Infrastructure
+namespace Library.Infrastructure
 {
     public static class UserExtension
     {
