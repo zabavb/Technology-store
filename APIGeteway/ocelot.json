@@ -50,6 +50,7 @@
       "UpstreamPathTemplate": "/gateway/users/{id}",
       "UpstreamHttpMethod": [ "DELETE", "PUT", "GET" ]
     },
+    //=========== Login ===========
     {
       "DownstreamPathTemplate": "/api/users/{username}/{password}",
       "DownstreamScheme": "https",
@@ -61,6 +62,56 @@
       ],
       "UpstreamPathTemplate": "/gateway/users/{username}/{password}",
       "UpstreamHttpMethod": [ "GET" ]
+    },
+    //=========== Basket ===========
+    {
+      "DownstreamPathTemplate": "/api/users/{username}/basket",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{username}/basket",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{username}/basket/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{username}/basket{id}",
+      "UpstreamHttpMethod": [ "POST", "DELETE" ]
+    },
+    //=========== Purchase ===========
+    {
+      "DownstreamPathTemplate": "/api/users/{username}/purchase",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{username}/purchase",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{username}/purchase/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{username}/purchase{id}",
+      "UpstreamHttpMethod": [ "POST", "DELETE" ]
     }
   ]
 }
