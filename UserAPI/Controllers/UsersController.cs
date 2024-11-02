@@ -24,6 +24,8 @@ namespace UserAPI.Controllers
             _context = context;
         }
 
+        //============================= GET =============================
+
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
@@ -49,7 +51,7 @@ namespace UserAPI.Controllers
             return user;
         }
 
-        // GET: api/Users/Username/Password
+        // GET: api/Users/username/password
         [HttpGet("{username}, {password}")]
         public async Task<ActionResult<User>> GetUserByUsernamePassword(string username, string password)
         {
@@ -68,6 +70,38 @@ namespace UserAPI.Controllers
             return user;
         }
 
+        // GET: api/Users/username/basket
+        [HttpGet("{username}/basket")]
+        public async Task<ActionResult<List<Product>>> GetUserBasket(string username)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
+
+            if (user == null)
+                return NotFound();
+
+            return user.Basket;
+        }
+
+        // GET: api/Users/username/purchase
+        [HttpGet("{username}/purchase")]
+        public async Task<ActionResult<List<Product>>> GetUserPurchases(string username)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
+
+            if (user == null)
+                return NotFound();
+
+            return user.Purchases;
+        }
+
+        //============================= POST =============================
+
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -85,6 +119,42 @@ namespace UserAPI.Controllers
             }
             return BadRequest(ModelState);
         }
+
+        // POST: api/Users/username/basket
+        [HttpPost("{username}/basket")]
+        public async Task<ActionResult<User>> PostToBasket(string username, Product product)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
+            if (user == null)
+                return NotFound();
+
+            user.Basket.Add(product);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        // POST: api/Users/username/purchase
+        [HttpPost("{username}/purchase")]
+        public async Task<ActionResult<User>> PostToUserPurchases(string username, Product product)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
+            if (user == null)
+                return NotFound();
+
+            user.Purchases.Add(product);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        //============================= PUT =============================
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -128,6 +198,8 @@ namespace UserAPI.Controllers
             return BadRequest(ModelState);
         }
 
+        //============================= DELETE =============================
+
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(long id)
@@ -136,7 +208,6 @@ namespace UserAPI.Controllers
                 return NotFound();
 
             var user = await _context.Users.FindAsync(id);
-            
             if (user == null)
                 return NotFound();
 
@@ -146,6 +217,51 @@ namespace UserAPI.Controllers
             return Ok();
         }
 
+        // DELETE: api/Users/username/basket/id
+        [HttpDelete("{username}/{id}")]
+        public async Task<IActionResult> DeleteFromUserBasket(string username, long id)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
+            if (user == null)
+                return NotFound();
+
+            var product = user.Basket.FirstOrDefault(p => p.Id.Equals(id));
+            if (product == null)
+                return NotFound();
+
+            user.Basket.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        // DELETE: api/Users/username/purchase/id
+        [HttpDelete("{username}/purchase/{id}")]
+        public async Task<IActionResult> DeleteFromUserPurchases(string username, long id)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
+            if (user == null)
+                return NotFound();
+
+            var product = user.Purchases.FirstOrDefault(p => p.Id.Equals(id));
+            if (product == null)
+                return NotFound();
+
+            user.Purchases.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        //============================= NonAction =============================
+
+        [NonAction]
         private bool UserExists(long id)
         {
             return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
