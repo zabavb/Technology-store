@@ -12,6 +12,8 @@ namespace Client.Controllers
     {
         private readonly string BaseAddress = "https://localhost:7074/";
 
+        //================================= Product =================================
+
         [HttpGet]
         public async Task<IActionResult> ProductList(Status status)
         {
@@ -47,6 +49,8 @@ namespace Client.Controllers
             return View(product!.Result);
         }
 
+        //================================= Basket =================================
+
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
         public async Task<IActionResult> BasketList()
@@ -65,7 +69,7 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> Basket(long id)
+        public async Task<IActionResult> PostToBasket(long id)
         {
             var product = GetProductByIdAsync(id);
 
@@ -84,6 +88,23 @@ namespace Client.Controllers
                     return View("ProductList", new Status(true, $"The product '{product.Result.Name}' has NOT been successfully added to basket"));
             }
         }
+
+        [Authorize(Roles = "User, Moderator, Admin")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteFromBasket(long id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    return View("ProductList", new Status(true, "Product has been successfully removed"));
+                    return View("ProductList", new Status(false, "Failed to remove product from the basket"));
+            }
+        }
+
+        //================================= Purchase =================================
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
@@ -123,6 +144,23 @@ namespace Client.Controllers
                     return View("ProductList", new Status(true, $"The product '{product.Result.Name}' has NOT been successfully purchased"));
             }
         }
+
+        [Authorize(Roles = "User, Moderator, Admin")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteFromPurchases(long id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/purchase/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    return View("ProductList", new Status(true, "Product has been successfully removed"));
+                return View("ProductList", new Status(false, "Failed to remove product from the purchases"));
+            }
+        }
+
+        //================================= NonAction =================================
 
         [NonAction]
         public async Task<Product> GetProductByIdAsync(long id)
