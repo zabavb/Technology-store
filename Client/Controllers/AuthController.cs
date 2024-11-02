@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
-    public class UsersController : Controller
+    public class AuthController : Controller
     {
         private readonly string BaseAddress = "https://localhost:7074/";
 
