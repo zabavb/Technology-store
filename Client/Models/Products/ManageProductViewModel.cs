@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Library.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Client.Models.Products
 {
@@ -33,6 +34,16 @@ namespace Client.Models.Products
             Producer = producer;
             Price = price;
             Details = details;
+        }
+
+        public ManageProductViewModel(Product product)
+        {
+            Id = product.Id;
+            Brand = product.Brand;
+            Model = product.Model;
+            Producer = product.Producer;
+            Price = product.Price;
+            Details = product.Details;
         }
 
         public ManageProductViewModel() { }

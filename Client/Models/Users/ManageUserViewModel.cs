@@ -1,5 +1,8 @@
 ﻿using Library.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Numerics;
 
 namespace Client.Models.Users
 {
@@ -36,18 +39,13 @@ namespace Client.Models.Users
         [StringLength(32, MinimumLength = 4, ErrorMessage = "Password must be in range between 4 and 32 characters")]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password confirmation is required")]
-        [Display(Name = "Confirm password")]
-        [DataType(DataType.Password, ErrorMessage = "Incorrect confirmation password")]
-        [Compare("Password", ErrorMessage = "Passwords does not much")]
-        public string ConfirmPassword { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = RoleType.User.ToString();
 
         public List<Product> Basket { get; set; } = new();
+        public List<Product> Purchases { get; set; } = new();
 
-        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string confirmPassword, string role)
+        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role, List<Product> basket, List<Product> purchases)
         {
             Id = id;
             Username = username;
@@ -57,8 +55,37 @@ namespace Client.Models.Users
             Email = email;
             Phone = phone;
             Password = password;
-            ConfirmPassword = confirmPassword;
             Role = role;
+            Basket = basket;
+            Purchases = purchases;
+        }
+
+        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role)
+        {
+            Id = id;
+            Username = username;
+            FirstName = firstName;
+            LastName = lastName;
+            Age = age;
+            Email = email;
+            Phone = phone;
+            Password = password;
+            Role = role;
+        }
+
+        public ManageUserViewModel(User user)
+        {
+            Id = user.Id;
+            Username = user.Username;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            Age = user.Age;
+            Email = user.Email;
+            Phone = user.Phone;
+            Password = user.Password;
+            Role = user.Role!;
+            Basket = user.Basket;
+            Purchases = user.Purchases;
         }
 
         public ManageUserViewModel() { }
