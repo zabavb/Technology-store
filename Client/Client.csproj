@@ -18,7 +18,6 @@
   <ItemGroup>
     <Folder Include="Views\Client\" />
     <Folder Include="Views\Manage\" />
-	<Folder Include="Views\Auth\" />
   </ItemGroup>
 
 </Project>
