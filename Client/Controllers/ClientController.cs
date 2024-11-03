@@ -12,6 +12,10 @@ namespace Client.Controllers
     {
         private readonly string BaseAddress = "https://localhost:7074/";
 
+        [HttpGet]
+        public IActionResult ManagePanel() => View();
+
+
         //================================= Product =================================
 
         [HttpGet]

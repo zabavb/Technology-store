@@ -46,40 +46,6 @@ namespace Client.Controllers
             return RedirectToAction("MyProfile", user);
         }
 
-        [NonAction]
-        private async Task<User> GetUserByUsernamePassword(string username, string password)
-        {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/users/{username}/{password}");
-
-                return response.IsSuccessStatusCode ?
-                    JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
-                    new User();
-            }
-        }
-
-        private async void CookieAuthenticationAsync(string username, string role)
-        {
-            using (HttpClient client = new())
-            {
-                List<Claim> claims = new()
-                {
-                    new(ClaimsIdentity.DefaultNameClaimType, username),
-                    new(ClaimsIdentity.DefaultRoleClaimType, role),
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
-                };
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-            }
-        }
-
         //============================ Logging out ============================
 
         [Authorize]
@@ -102,6 +68,43 @@ namespace Client.Controllers
             }
 
             return View(user);
+        }
+
+        //============================ NonAction ============================
+
+        [NonAction]
+        private async Task<User> GetUserByUsernamePassword(string username, string password)
+        {
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.GetAsync($"gateway/users/{username}/{password}");
+
+                return response.IsSuccessStatusCode ?
+                    JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
+                    new User();
+            }
+        }
+
+        [NonAction]
+        private async void CookieAuthenticationAsync(string username, string role)
+        {
+            using (HttpClient client = new())
+            {
+                List<Claim> claims = new()
+                {
+                    new(ClaimsIdentity.DefaultNameClaimType, username),
+                    new(ClaimsIdentity.DefaultRoleClaimType, role),
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
+                };
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+            }
         }
     }
 }
