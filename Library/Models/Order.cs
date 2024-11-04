@@ -10,17 +10,17 @@ namespace Library.Models
     public class Order
     {
         public long Id { get; set; }
-        public Product Item { get; set; } = new();
+        public List<Product> Items { get; set; } = new();
         public User Receiver { get; set; } = new();
         public string Country { get; set; } = string.Empty;
         public string Locality { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public DateOnly DeliveryDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
-        public Order(long id, Product item, User receiver, string country, string locality, string address, DateOnly deliveryDate)
+        public Order(long id, List<Product> items, User receiver, string country, string locality, string address, DateOnly deliveryDate)
         {
             Id = id;
-            Item = item;
+            Items = items;
             Receiver = receiver;
             Country = country;
             Locality = locality;
