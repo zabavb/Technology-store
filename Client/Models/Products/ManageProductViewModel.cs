@@ -5,8 +5,6 @@ namespace Client.Models.Products
 {
     public class ManageProductViewModel
     {
-        public long Id { get; set; }
-
         [Required(ErrorMessage = "Brand is required")]
         [StringLength(16, MinimumLength = 2, ErrorMessage = "Brand must be in range between 2 and 16 characters")]
         public string Brand { get; set; } = string.Empty;

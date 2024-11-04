@@ -8,8 +8,6 @@ namespace Client.Models.Users
 {
     public class ManageUserViewModel
     {
-        public long Id { get; set; }
-
         [Required(ErrorMessage = "Username is required")]
         [StringLength(16, MinimumLength = 4, ErrorMessage = "Username must be in range between 4 and 16 characters")]
         public string Username { get; set; } = string.Empty;
