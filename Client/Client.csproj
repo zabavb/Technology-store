@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Client\" />
     <Folder Include="Views\Manage\" />
   </ItemGroup>
 
