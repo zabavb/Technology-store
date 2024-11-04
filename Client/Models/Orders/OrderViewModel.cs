@@ -5,6 +5,7 @@ namespace Client.Models.Orders
 {
     public class OrderViewModel
     {
+        public long Id { get; set; }
         public List<Product> Items { get; set; } = new();
 
         [Display(Name = "Receiver name")]
