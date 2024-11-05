@@ -11,7 +11,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/products",
-      "UpstreamHttpMethod": [ "POST", "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST"]
     },
     {
       "DownstreamPathTemplate": "/api/products/{id}",
@@ -23,7 +23,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/products/{id}",
-      "UpstreamHttpMethod": [ "DELETE", "PUT", "GET" ]
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     //================== User API ==================
     {
@@ -36,7 +36,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/users",
-      "UpstreamHttpMethod": [ "POST", "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/users/{username}",
@@ -60,7 +60,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/users/{id}",
-      "UpstreamHttpMethod": [ "DELETE", "PUT", "GET" ]
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     //=========== Login ===========
     {

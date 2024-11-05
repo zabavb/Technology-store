@@ -52,7 +52,7 @@ namespace UserAPI.Controllers
         }
 
         // GET: api/Users/username/password
-        [HttpGet("{username}, {password}")]
+        [HttpGet("{username}/{password}")]
         public async Task<ActionResult<User>> GetUserByUsernamePassword(string username, string password)
         {
             if (_context.Users == null)
@@ -187,7 +187,7 @@ namespace UserAPI.Controllers
         }
 
         // DELETE: api/Users/username/basket/id
-        [HttpDelete("{username}/{id}")]
+        [HttpDelete("{username}/basket/{id}")]
         public async Task<IActionResult> DeleteFromUserBasket(string username, long id)
         {
             if (_context.Users == null)
