@@ -85,21 +85,6 @@ namespace UserAPI.Controllers
             return user.Basket;
         }
 
-        // GET: api/Users/username/purchase
-        [HttpGet("{username}/purchase")]
-        public async Task<ActionResult<List<Product>>> GetUserPurchases(string username)
-        {
-            if (_context.Users == null)
-                return NotFound();
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
-
-            if (user == null)
-                return NotFound();
-
-            return user.Purchases;
-        }
-
         //============================= POST =============================
 
         // POST: api/Users
@@ -137,23 +122,6 @@ namespace UserAPI.Controllers
             return Ok();
         }
 
-        // POST: api/Users/username/purchase
-        [HttpPost("{username}/purchase")]
-        public async Task<ActionResult<User>> PostToUserPurchases(string username, Product product)
-        {
-            if (_context.Users == null)
-                return NotFound();
-
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
-            if (user == null)
-                return NotFound();
-
-            user.Purchases.Add(product);
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
         //============================= PUT =============================
 
         // PUT: api/Users/5
@@ -179,6 +147,7 @@ namespace UserAPI.Controllers
                 user.Phone = model.Phone;
                 user.Password = model.Password;
                 user.Role = model.Role;
+                user.Basket = model.Basket;
 
                 try
                 {
@@ -233,27 +202,6 @@ namespace UserAPI.Controllers
                 return NotFound();
 
             user.Basket.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        // DELETE: api/Users/username/purchase/id
-        [HttpDelete("{username}/purchase/{id}")]
-        public async Task<IActionResult> DeleteFromUserPurchases(string username, long id)
-        {
-            if (_context.Users == null)
-                return NotFound();
-
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
-            if (user == null)
-                return NotFound();
-
-            var product = user.Purchases.FirstOrDefault(p => p.Id.Equals(id));
-            if (product == null)
-                return NotFound();
-
-            user.Purchases.Remove(product);
             await _context.SaveChangesAsync();
 
             return Ok();

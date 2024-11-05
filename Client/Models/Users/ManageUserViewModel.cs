@@ -41,11 +41,11 @@ namespace Client.Models.Users
 
         [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = RoleType.User.ToString();
-
+        
+        [ScaffoldColumn(false)]
         public List<Product> Basket { get; set; } = new();
-        public List<Product> Purchases { get; set; } = new();
 
-        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role, List<Product> basket, List<Product> purchases)
+        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role, List<Product> basket, List<Order> orders)
         {
             Id = id;
             Username = username;
@@ -57,7 +57,7 @@ namespace Client.Models.Users
             Password = password;
             Role = role;
             Basket = basket;
-            Purchases = purchases;
+            Orders = orders;
         }
 
         public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role)
@@ -85,7 +85,6 @@ namespace Client.Models.Users
             Password = user.Password;
             Role = user.Role!;
             Basket = user.Basket;
-            Purchases = user.Purchases;
         }
 
         public ManageUserViewModel() { }

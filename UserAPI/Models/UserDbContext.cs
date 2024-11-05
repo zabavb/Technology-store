@@ -1,9 +1,9 @@
-﻿using Library.Models;
+﻿using Library.Infrastructure;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Data;
 using System.Text;
-using UserAPI.Infrastructure;
 
 namespace UserAPI.Models
 {

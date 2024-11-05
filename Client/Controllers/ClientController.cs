@@ -1,4 +1,5 @@
 ﻿using Client.Models;
+using Client.Models.Orders;
 using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,6 @@ namespace Client.Controllers
 
         [HttpGet]
         public IActionResult ManagePanel() => View();
-
 
         //================================= Product =================================
 
@@ -46,7 +46,7 @@ namespace Client.Controllers
                 ViewBag.Status = status;
 
             var product = GetProductByIdAsync(id);
-            
+
             if (product == null)
                 ViewBag.Status = new Status(false, "Could not find the product");
 
@@ -57,7 +57,7 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> BasketList()
+        public async Task<IActionResult> GetBasket()
         {
             using (HttpClient client = new())
             {
@@ -104,63 +104,67 @@ namespace Client.Controllers
 
                 if (response.IsSuccessStatusCode)
                     return View("ProductList", new Status(true, "Product has been successfully removed"));
-                    return View("ProductList", new Status(false, "Failed to remove product from the basket"));
+                return View("ProductList", new Status(false, "Failed to remove product from the basket"));
             }
         }
 
-        //================================= Purchase =================================
+        //================================= Order =================================
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> PurchaseList()
+        public async Task<IActionResult> GetOrder([FromQuery] long[] ids)
         {
+            List<Product> products = new List<Product>();
+            double sum = 0;
+            foreach (var id in ids)
+            {
+                var product = await GetProductByIdAsync(id);
+
+                if (product == null)
+                {
+                    ViewBag.Status = new Status(false, $"Could not find the product by id: {id}");
+                    continue;
+                }
+                products.Add(product);
+                sum += product.Price;
+            }
+
+            var user = await GetUserByUsernameAsync(User.Identity!.Name!);
+            if (user == null) {
+                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
+                return View("ProductList");
+            }
+
+            ViewBag.Sum = sum;
+            OrderViewModel model = new OrderViewModel(products, user!);
+            
+            return View("Order", model);
+        }
+
+        [Authorize(Roles = "User, Moderator, Admin")]
+        [HttpPost]
+        public async Task<IActionResult> PostOrder(OrderViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("Order", model);
+
+            var user = await GetUserByUsernameAsync(User.Identity!.Name!);
+            if (user == null)
+            {
+                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
+                return View("ProductList");
+            }
+
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/users/{User.Identity!.Name}/purchase");
+                var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToOrder(model, user)), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync($"gateway/orders/{User.Identity!.Name}", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View(JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync())!);
+                    return View("ProductList", new Status(true, $"An order '{model.Id}' has been successfully made"));
                 else
-                    return View(new List<Product>());
-            }
-        }
-
-
-        [Authorize(Roles = "User, Moderator, Admin")]
-        [HttpGet]
-        public async Task<IActionResult> Purchase(long id)
-        {
-            var product = GetProductByIdAsync(id);
-
-            if (product == null)
-                ViewBag.Status = new Status(false, "Could not find the product");
-
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                var content = new StringContent(JsonConvert.SerializeObject(product!.Result), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync($"gateway/users/{User.Identity!.Name}/purchase", content);
-
-                if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, $"The product '{product.Result.Name}' has been purchased"));
-                else
-                    return View("ProductList", new Status(true, $"The product '{product.Result.Name}' has NOT been successfully purchased"));
-            }
-        }
-
-        [Authorize(Roles = "User, Moderator, Admin")]
-        [HttpGet]
-        public async Task<IActionResult> DeleteFromPurchases(long id)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/purchase/{id}");
-
-                if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, "Product has been successfully removed"));
-                return View("ProductList", new Status(false, "Failed to remove product from the purchases"));
+                    return View("ProductList", new Status(true, $"An occurred while processing an order '{model.Id}'"));
             }
         }
 
@@ -178,6 +182,20 @@ namespace Client.Controllers
                     return JsonConvert.DeserializeObject<Product>(await response.Content.ReadAsStringAsync())!;
                 else
                     return new Product();
+            }
+        }
+
+        [NonAction]
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.GetAsync($"gateway/users/{username}");
+
+                return response.IsSuccessStatusCode ?
+                    JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
+                    new User();
             }
         }
     }
