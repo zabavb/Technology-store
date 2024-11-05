@@ -27,7 +27,7 @@
     },
     //================== User API ==================
     {
-      "DownstreamPathTemplate": "/api/users/",
+      "DownstreamPathTemplate": "/api/users",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -35,7 +35,19 @@
           "Port": 7114
         }
       ],
-      "UpstreamPathTemplate": "/gateway/users/",
+      "UpstreamPathTemplate": "/gateway/users",
+      "UpstreamHttpMethod": [ "POST", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{username}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7114
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{username}",
       "UpstreamHttpMethod": [ "POST", "GET" ]
     },
     {
@@ -74,7 +86,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/users/{username}/basket",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/users/{username}/basket/{id}",
@@ -85,10 +97,10 @@
           "Port": 7114
         }
       ],
-      "UpstreamPathTemplate": "/gateway/users/{username}/basket{id}",
-      "UpstreamHttpMethod": [ "POST", "DELETE" ]
+      "UpstreamPathTemplate": "/gateway/users/{username}/basket/{id}",
+      "UpstreamHttpMethod": [ "DELETE" ]
     },
-    //=========== Order ===========
+    //==================  Order API ================== 
     {
       "DownstreamPathTemplate": "/api/orders",
       "DownstreamScheme": "https",
@@ -99,7 +111,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/orders",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/orders/{id}",
@@ -112,18 +124,6 @@
       ],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/orders/{username}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7168
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/orders/{username}",
-      "UpstreamHttpMethod": [ "POST" ]
     }
   ]
 }

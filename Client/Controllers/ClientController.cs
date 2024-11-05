@@ -159,7 +159,7 @@ namespace Client.Controllers
             {
                 client.BaseAddress = new Uri(BaseAddress);
                 var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToOrder(model, user)), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync($"gateway/orders/{User.Identity!.Name}", content);
+                HttpResponseMessage response = await client.PostAsync($"gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
                     return View("ProductList", new Status(true, $"An order '{model.Id}' has been successfully made"));
