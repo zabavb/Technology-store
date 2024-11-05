@@ -88,30 +88,42 @@
       "UpstreamPathTemplate": "/gateway/users/{username}/basket{id}",
       "UpstreamHttpMethod": [ "POST", "DELETE" ]
     },
-    //=========== Purchase ===========
+    //=========== Order ===========
     {
-      "DownstreamPathTemplate": "/api/users/{username}/purchase",
+      "DownstreamPathTemplate": "/api/orders",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7114
+          "Port": 7168
         }
       ],
-      "UpstreamPathTemplate": "/gateway/users/{username}/purchase",
+      "UpstreamPathTemplate": "/gateway/orders",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/users/{username}/purchase/{id}",
+      "DownstreamPathTemplate": "/api/orders/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7114
+          "Port": 7168
         }
       ],
-      "UpstreamPathTemplate": "/gateway/users/{username}/purchase{id}",
-      "UpstreamHttpMethod": [ "POST", "DELETE" ]
+      "UpstreamPathTemplate": "/gateway/orders/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/orders/{username}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7168
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/orders/{username}",
+      "UpstreamHttpMethod": [ "POST" ]
     }
   ]
 }
