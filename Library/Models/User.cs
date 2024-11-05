@@ -18,9 +18,8 @@ namespace Library.Models
         public string Password { get; set; } = string.Empty;
         public string? Role { get; set; } = RoleType.Guest.ToString();
         public List<Product> Basket { get; set; } = new();
-        public Order Orders { get; set; } = new();
 
-        public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role, List<Product> basket, Order orders)
+        public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role, List<Product> basket)
         {
             Id = id;
             Username = username;
@@ -32,7 +31,6 @@ namespace Library.Models
             Password = password;
             Role = role;
             Basket = basket;
-            Orders = orders;
         }
 
         public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role)

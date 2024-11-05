@@ -147,6 +147,7 @@ namespace UserAPI.Controllers
                 user.Phone = model.Phone;
                 user.Password = model.Password;
                 user.Role = model.Role;
+                user.Basket = model.Basket;
 
                 try
                 {
