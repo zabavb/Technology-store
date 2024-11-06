@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Library.Models.User>
+
+@{
+    ViewData["Title"] = "Manage users";
+}
+
+@if (ViewBag.Status != null)
+{
+    @if (ViewBag.Status.IsSuccess)
+    {
+        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
+    }
+}
+
+<a asp-action="ManagePanel">Back to panel</a>
+
+<h1>Users</h1>
+<a asp-action="PostUser" class="btn btn-outline-dark">Register new user</a>
+<div class="d-flex flex-wrap">
+    @foreach (var item in Model)
+    {
+        <div class="card card-body" style="width: 18rem; max-width: 320px">
+            <h4 class="card-title">@item.Username <span class="mb-2 text-muted">@item.Role</span></h4>
+            <h6 class="card-subtitle">@item.FirstName @item.LastName</h6>
+            <h4 class="card-title">@item.Age y. o.</h4>
+            <p class="card-text">@item.Email @item.Phone</p>
+            <a asp-action="User" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
+            <a asp-action="DeleteUser" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
+        </div>
+    }
+</div>
