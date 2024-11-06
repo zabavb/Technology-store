@@ -1,0 +1,41 @@
+﻿@model Library.Models.Order
+
+@{
+    ViewData["Title"] = "Order " + Model.Id;
+}
+
+@if (ViewBag.Status != null)
+{
+    @if (ViewBag.Status.IsSuccess)
+    {
+        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
+    }
+}
+
+<a asp-action="OrderList">Back</a>
+
+<div class="card card-body" style="width: 18rem; max-width: 320px">
+    <h4 class="card-title">@Model.Id</h4>
+    <h6 class="card-subtitle mb-2 text-muted">@Model.Country, @Model.Locality, @Model.Address</h6>
+    <h4 class="card-title">
+        @foreach (var item in Model.Items)
+        {
+            <div class="card card-body" style="width: 18rem; max-width: 320px">
+                <h4 class="card-title">@item.Name</h4>
+                <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
+                <h4 class="card-title">$@item.Price</h4>
+                <p class="card-text">@item.Details</p>
+                <a asp-action="PutProduct" asp-route-id="@item.Id" class="btn btn-outline-dark">Edit</a>
+                <a asp-action="DeleteProduct" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
+            </div>
+        }
+    </h4>
+    <h4 class="card-title">@Model.Receiver.FirstName @Model.Receiver.LastName <span class="mb-2 text-muted">@Model.Receiver.Username</span></h4>
+    <p class="card-text">@Model.DeliveryDate.ToString()</p>
+    <a asp-action="PutOrder" asp-route-id="@Model.Id" class="btn btn-outline-dark">Edit</a>
+    <a asp-action="DeleteOrder" asp-route-id="@Model.Id" class="btn btn-outline-dark">Cancel</a>
+</div>

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Library.Models.Product>
 
 @{
-    ViewData["Title"] = "Basket";
+    ViewData["Title"] = "Manage products";
 }
 
 @if (ViewBag.Status != null)
@@ -16,23 +16,20 @@
     }
 }
 
-<a asp-action="ProductList">Back</a>
+<a asp-action="ManagePanel">Back to panel</a>
 
-<h1>Basket</h1>
+<h1>Products</h1>
+<a asp-action="PostProduct" class="btn btn-outline-dark">Add new product</a>
 <div class="d-flex flex-wrap">
     @foreach (var item in Model)
     {
         <div class="card card-body" style="width: 18rem; max-width: 320px">
             <h4 class="card-title">@item.Name</h4>
             <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
-            <h4 class="card-title">@item.Price</h4>
+            <h4 class="card-title">$@item.Price</h4>
             <p class="card-text">@item.Details</p>
             <a asp-action="Product" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
-            <a asp-action="DeleteFromBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
-            <a asp-action="GetOrder" asp-route-id="@item.Id" class="btn btn-outline-dark">Purchase</a>
+            <a asp-action="DeleteProduct" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
         </div>
     }
-</div>
-<div class="d-flex flex-wrap">
-    <a asp-action="GetOrder" asp-route-ids="@ViewBag.Ids">Purchase for $@ViewBag.Sum</a>
 </div>
