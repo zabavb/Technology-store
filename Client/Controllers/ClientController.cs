@@ -13,9 +13,6 @@ namespace Client.Controllers
     {
         private readonly string BaseAddress = "https://localhost:7074/";
 
-        [HttpGet]
-        public IActionResult ManagePanel() => View();
-
         //================================= Product =================================
 
         [HttpGet]
@@ -65,9 +62,16 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.GetAsync($"gateway/users/{User.Identity!.Name}/basket");
 
                 if (response.IsSuccessStatusCode)
-                    return View(JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync())!);
+                {
+                    var products = JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync())!;
+
+                    ViewBag.Ids = BuildStringIds(products.ToList());
+                    ViewBag.Sum = CountSum(products.ToList());
+                    
+                    return View("BasketList", products);
+                }
                 else
-                    return View(new List<Product>());
+                    return View("BasketList", new List<Product>());
             }
         }
 
@@ -112,7 +116,7 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetOrder([FromQuery] long[] ids)
+        public async Task<IActionResult> GetOrder(long[] ids)
         {
             List<Product> products = new List<Product>();
             double sum = 0;
@@ -197,6 +201,25 @@ namespace Client.Controllers
                     JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
                     new User();
             }
+        }
+
+        [NonAction]
+        public string BuildStringIds(List<Product> products)
+        {
+            StringBuilder ids = new StringBuilder();
+            products.ForEach(p => ids.Append($"ids={p.Id}&"));
+            ids.Remove(ids.Length - 1, ids.Length);
+            
+            return ids.ToString();
+        }
+
+        [NonAction]
+        public double CountSum(List<Product> products)
+        {
+            double sum = 0;
+            products.ForEach(p => sum += p.Price);
+            
+            return sum;
         }
     }
 }
