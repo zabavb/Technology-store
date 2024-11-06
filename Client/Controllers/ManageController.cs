@@ -187,17 +187,17 @@ namespace Client.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Product(Status status, long id)
+        public IActionResult Product(Status status, long id)
         {
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
-            var product = await GetProductByIdAsync(id);
+            var product = GetProductByIdAsync(id);
 
             if (product == null)
                 ViewBag.Status = new Status(false, "Could not find the product");
 
-            return View(product);
+            return View(product!.Result);
         }
 
         [HttpGet]
