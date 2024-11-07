@@ -45,7 +45,7 @@ namespace Client.Models.Users
         [ScaffoldColumn(false)]
         public List<Product> Basket { get; set; } = new();
 
-        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role, List<Product> basket, List<Order> orders)
+        public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role, List<Product> basket)
         {
             Id = id;
             Username = username;
@@ -57,7 +57,6 @@ namespace Client.Models.Users
             Password = password;
             Role = role;
             Basket = basket;
-            Orders = orders;
         }
 
         public ManageUserViewModel(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string role)
