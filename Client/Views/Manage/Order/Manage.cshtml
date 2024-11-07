@@ -1,0 +1,81 @@
+﻿@using Library.Models
+@model Client.Models.Orders.OrderViewModel
+
+@{
+    ViewData["Title"] = "Manage order" + @Model.Id;
+}
+
+@if (ViewBag.IsPost)
+{
+    <h2>Create new order</h2>
+}
+else
+{
+    <h2>Update order: @Model.Id</h2>
+}
+
+@{
+    string action = string.Empty;
+
+    if (ViewBag.IsPost)
+        action = "PostOrder";
+    else
+        action = "PutOrder";
+}
+
+<div class="d-flex flex-wrap">
+    @foreach (var item in Model.Items)
+    {
+        <div class="card card-body" style="width: 18rem; max-width: 320px">
+            <h4 class="card-title">@item.Name</h4>
+            <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
+            <h4 class="card-title">$@item.Price</h4>
+            <p class="card-text">@item.Details</p>
+        </div>
+    }
+</div>
+
+<form asp-action="@action" method="post">
+    <div class="validation" style="color: red" asp-validation-summary="ModelOnly"></div>
+    <div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverUsername"></label>
+            <input class="form-control" asp-for="ReceiverUsername" />
+            <span style="color: red" asp-validation-for="ReceiverUsername"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverName"></label>
+            <input class="form-control" asp-for="ReceiverName" />
+            <span style="color: red" asp-validation-for="ReceiverName"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverEmail"></label>
+            <input class="form-control" asp-for="ReceiverEmail" />
+            <span style="color: red" asp-validation-for="ReceiverEmail"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverPhone"></label>
+            <input class="form-control" asp-for="ReceiverPhone" />
+            <span style="color: red" asp-validation-for="ReceiverPhone"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Country"></label>
+            <input class="form-control" asp-for="Country" />
+            <span style="color: red" asp-validation-for="Country"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Locality"></label>
+            <input class="form-control" asp-for="Locality" />
+            <span style="color: red" asp-validation-for="Locality"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Address"></label>
+            <input class="form-control" asp-for="Address" />
+            <span style="color: red" asp-validation-for="Address"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" class="btn btn-outline-dark" value="Confirm" />
+        </div>
+    </div>
+</form>
