@@ -20,6 +20,9 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Client" asp-action="ProductList">Store</a>
+                        </li>
                         @if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
@@ -33,10 +36,25 @@
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Client" asp-action="GetBasket">Basket</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link text-dark btn" asp-controller="Auth" asp-action="MyProfile" asp-route-fullName="@User.Identity.Name">@User.Identity.Name</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="btn btn-outline-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                        }
+                        @if (User.Identity != null)
+                        {
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>
                                 </li>
                             }
                         }
