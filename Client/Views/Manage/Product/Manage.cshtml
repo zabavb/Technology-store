@@ -1,0 +1,59 @@
+﻿@using Library.Models
+@model Client.Models.Products.ManageProductViewModel
+
+@{
+    ViewData["Title"] = "Manage product" + @Model.Brand + " " + @Model.Model;
+}
+
+@if (ViewBag.IsPost)
+{
+    <h2>Add new product</h2>
+}
+else
+{
+    <h2>Edit product: @Model.Brand @Model.Model</h2>
+}
+
+@{
+    string action = string.Empty;
+
+    if (ViewBag.IsPost)
+        action = "PostProduct";
+    else
+        action = "PutProduct";
+}
+
+<form asp-action="@action" method="post">
+    <div class="validation" style="color: red" asp-validation-summary="ModelOnly"></div>
+    <div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Brand"></label>
+            <input class="form-control" asp-for="Brand" />
+            <span style="color: red" asp-validation-for="Brand"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Model"></label>
+            <input class="form-control" asp-for="Model" />
+            <span style="color: red" asp-validation-for="Model"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Producer"></label>
+            <input class="form-control" asp-for="Producer" />
+            <span style="color: red" asp-validation-for="Producer"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Price"></label>
+            <input class="form-control" asp-for="Price" />
+            <span style="color: red" asp-validation-for="Price"></span>
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="Details"></label>
+            <input class="form-control" asp-for="Details" />
+            <span style="color: red" asp-validation-for="Details"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" class="btn btn-outline-dark" value="Confirm" />
+        </div>
+    </div>
+</form>
