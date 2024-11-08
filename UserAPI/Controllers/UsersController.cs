@@ -48,6 +48,8 @@ namespace UserAPI.Controllers
 
             if (user == null)
                 return NotFound();
+            else
+                user.Basket.ForEach(b => user.BasketIds.Add(b.Id));
 
             return user;
         }
@@ -82,6 +84,8 @@ namespace UserAPI.Controllers
 
             if (user == null)
                 return NotFound();
+            else
+                user.Basket.ForEach(b => user.BasketIds.Add(b.Id));
 
             return user.BasketIds;
         }
@@ -97,6 +101,9 @@ namespace UserAPI.Controllers
             {
                 if (_context.Users == null)
                     return Problem("Entity set 'Users' is null.");
+
+                model.Basket.ForEach(b => model.BasketIds.Add(b.Id));
+
                 _context.Users.Add(model);
                 await _context.SaveChangesAsync();
 
@@ -113,7 +120,7 @@ namespace UserAPI.Controllers
             if (_context.Users == null)
                 return NotFound();
 
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
             if (user == null)
                 return NotFound();
 
@@ -194,7 +201,7 @@ namespace UserAPI.Controllers
             if (_context.Users == null)
                 return NotFound();
 
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username)).Result;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
             if (user == null)
                 return NotFound();
 
