@@ -9,6 +9,7 @@ using Library.Models;
 using ProductAPI.Models;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ProductAPI.Controllers
 {
@@ -46,6 +47,22 @@ namespace ProductAPI.Controllers
                 return NotFound();
 
             return model;
+        }
+
+        // GET: api/Products/{ids}
+        [HttpGet("{ids}")]
+        public ActionResult<List<Product>> GetProductsByIds(long[] ids)
+        {
+            if (_context.Products == null)
+                return NotFound();
+
+            List<Product> products = new();
+            ids.ToList().ForEach(id => products = (List<Product>)_context.Products.Where(p => p.Id.Equals(id)));
+
+            if (products.IsNullOrEmpty())
+                return NotFound();
+
+            return products;
         }
 
         // POST: api/Products

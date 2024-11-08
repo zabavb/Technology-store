@@ -11,7 +11,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/products",
-      "UpstreamHttpMethod": [ "GET", "POST"]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/products/{id}",
@@ -24,6 +24,18 @@
       ],
       "UpstreamPathTemplate": "/gateway/products/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/products/{ids}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7063
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/products/{ids}",
+      "UpstreamHttpMethod": [ "GET" ]
     },
     //================== User API ==================
     {
