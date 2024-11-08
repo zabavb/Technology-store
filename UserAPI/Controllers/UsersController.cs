@@ -10,6 +10,7 @@ using UserAPI.Models;
 using System.Text;
 using System.Security.Cryptography;
 using Library.Infrastructure;
+using NuGet.ContentModel;
 
 namespace UserAPI.Controllers
 {
@@ -72,7 +73,7 @@ namespace UserAPI.Controllers
 
         // GET: api/Users/username/basket
         [HttpGet("{username}/basket")]
-        public async Task<ActionResult<List<Product>>> GetUserBasket(string username)
+        public async Task<ActionResult<List<long>>> GetUserBasket(string username)
         {
             if (_context.Users == null)
                 return NotFound();
@@ -82,7 +83,7 @@ namespace UserAPI.Controllers
             if (user == null)
                 return NotFound();
 
-            return user.Basket;
+            return user.BasketIds;
         }
 
         //============================= POST =============================
@@ -116,7 +117,7 @@ namespace UserAPI.Controllers
             if (user == null)
                 return NotFound();
 
-            user.Basket.Add(product);
+            user.BasketIds.Add(product.Id);
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -147,7 +148,7 @@ namespace UserAPI.Controllers
                 user.Phone = model.Phone;
                 user.Password = model.Password;
                 user.Role = model.Role;
-                user.Basket = model.Basket;
+                model.Basket.ForEach(b => user.BasketIds.Add(b.Id));
 
                 try
                 {
@@ -201,7 +202,7 @@ namespace UserAPI.Controllers
             if (product == null)
                 return NotFound();
 
-            user.Basket.Remove(product);
+            user.BasketIds.Remove(product.Id);
             await _context.SaveChangesAsync();
 
             return Ok();

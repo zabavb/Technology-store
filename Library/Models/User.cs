@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace Library.Models
         public string Phone { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string? Role { get; set; } = RoleType.Guest.ToString();
+        public List<long> BasketIds { get; set; } = new();
+        [NotMapped]
         public List<Product> Basket { get; set; } = new();
 
         public User(long id, string username, string? firstName, string? lastName, int? age, string email, string phone, string password, string? role, List<Product> basket)
@@ -30,6 +33,7 @@ namespace Library.Models
             Phone = phone;
             Password = password;
             Role = role;
+            basket.ForEach(b => BasketIds.Add(b.Id));
             Basket = basket;
         }
 
