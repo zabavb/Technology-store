@@ -51,6 +51,8 @@ namespace Client.Controllers
 
             if (user == null)
                 ViewBag.Status = new Status(false, "Could not find the user");
+            else
+                user.Basket = await ControllersExtension.GetProductsByIdsAsync(user.BasketIds.ToArray(), BaseAddress);
 
             return View("User/View", user);
         }
@@ -103,6 +105,8 @@ namespace Client.Controllers
                     var user = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
                     if (user == null)
                         return View("User/List", new Status(false, $"Could not find the user"));
+                    else
+                        user.Basket = await ControllersExtension.GetProductsByIdsAsync(user.BasketIds.ToArray(), BaseAddress);
 
                     return View("User/Manage", new ManageUserViewModel(user));
                 }
@@ -177,7 +181,7 @@ namespace Client.Controllers
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
-            var product = await GetProductByIdAsync(id);
+            var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
                 ViewBag.Status = new Status(false, "Could not find the product");
@@ -329,7 +333,7 @@ namespace Client.Controllers
                 return View("Order/Manage", model);
             }
 
-            var user = await GetUserByUsernameAsync(model.ReceiverUsername);
+            var user = await ControllersExtension.GetUserByUsernameAsync(model.ReceiverUsername, BaseAddress);
             if (user == null)
             {
                 ViewBag.IsPost = true;
@@ -384,7 +388,7 @@ namespace Client.Controllers
                 return View("Order/Manage", model);
             }
 
-            var user = await GetUserByUsernameAsync(model.ReceiverUsername);
+            var user = await ControllersExtension.GetUserByUsernameAsync(model.ReceiverUsername, BaseAddress);
             if (user == null)
             {
                 ViewBag.IsPost = false;
@@ -441,21 +445,6 @@ namespace Client.Controllers
         }
 
         [NonAction]
-        public async Task<Product> GetProductByIdAsync(long id)
-        {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/products/{id}");
-
-                if (response.IsSuccessStatusCode)
-                    return JsonConvert.DeserializeObject<Product>(await response.Content.ReadAsStringAsync())!;
-                else
-                    return new Product();
-            }
-        }
-
-        [NonAction]
         public async Task<Order> GetOrderByIdAsync(long id)
         {
             using (HttpClient client = new())
@@ -467,20 +456,6 @@ namespace Client.Controllers
                     return JsonConvert.DeserializeObject<Order>(await response.Content.ReadAsStringAsync())!;
                 else
                     return new Order();
-            }
-        }
-
-        [NonAction]
-        public async Task<User> GetUserByUsernameAsync(string username)
-        {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/users/{username}");
-
-                return response.IsSuccessStatusCode ?
-                    JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
-                    new User();
             }
         }
     }

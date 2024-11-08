@@ -42,7 +42,7 @@ namespace Client.Controllers
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
-            var product = GetProductByIdAsync(id);
+            var product = ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
                 ViewBag.Status = new Status(false, "Could not find the product");
@@ -63,10 +63,14 @@ namespace Client.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var products = JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync())!;
+                    var ids = JsonConvert.DeserializeObject<long[]>(await response.Content.ReadAsStringAsync())!;
+                    var products = await ControllersExtension.GetProductsByIdsAsync(ids, BaseAddress);
 
-                    ViewBag.Ids = BuildStringIds(products.ToList());
-                    ViewBag.Sum = CountSum(products.ToList());
+                    if (products == null)
+                        ViewBag.Status = new Status(false, "Failed to load basket");
+                    
+                    ViewBag.Ids = BuildStringIds(ids);
+                    ViewBag.Sum = CountSum(products!);
                     
                     return View("BasketList", products);
                 }
@@ -79,21 +83,21 @@ namespace Client.Controllers
         [HttpGet]
         public async Task<IActionResult> PostToBasket(long id)
         {
-            var product = GetProductByIdAsync(id);
+            var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
-                ViewBag.Status = new Status(false, "Could not find the product");
+                return View("ProductList", new Status(false, "Could not find the product"));
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                var content = new StringContent(JsonConvert.SerializeObject(product!.Result), Encoding.UTF8, "application/json");
+                var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await client.PostAsync($"gateway/users/{User.Identity!.Name}/basket", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, $"The product '{product.Result.Name}' has been added to basket"));
+                    return View("ProductList", new Status(true, $"The product '{product.Name}' has been added to basket"));
                 else
-                    return View("ProductList", new Status(true, $"The product '{product.Result.Name}' has NOT been successfully added to basket"));
+                    return View("ProductList", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
             }
         }
 
@@ -122,7 +126,7 @@ namespace Client.Controllers
             double sum = 0;
             foreach (var id in ids)
             {
-                var product = await GetProductByIdAsync(id);
+                var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
                 if (product == null)
                 {
@@ -133,7 +137,7 @@ namespace Client.Controllers
                 sum += product.Price;
             }
 
-            var user = await GetUserByUsernameAsync(User.Identity!.Name!);
+            var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null) {
                 ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
                 return View("ProductList");
@@ -152,7 +156,7 @@ namespace Client.Controllers
             if (!ModelState.IsValid)
                 return View("Order", model);
 
-            var user = await GetUserByUsernameAsync(User.Identity!.Name!);
+            var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
             {
                 ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
@@ -175,42 +179,15 @@ namespace Client.Controllers
         //================================= NonAction =================================
 
         [NonAction]
-        public async Task<Product> GetProductByIdAsync(long id)
+        public string BuildStringIds(long[] ids)
         {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/products/{id}");
+            List<long> list = ids.ToList();
+            StringBuilder str = new StringBuilder();
 
-                if (response.IsSuccessStatusCode)
-                    return JsonConvert.DeserializeObject<Product>(await response.Content.ReadAsStringAsync())!;
-                else
-                    return new Product();
-            }
-        }
-
-        [NonAction]
-        public async Task<User> GetUserByUsernameAsync(string username)
-        {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/users/{username}");
-
-                return response.IsSuccessStatusCode ?
-                    JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
-                    new User();
-            }
-        }
-
-        [NonAction]
-        public string BuildStringIds(List<Product> products)
-        {
-            StringBuilder ids = new StringBuilder();
-            products.ForEach(p => ids.Append($"ids={p.Id}&"));
-            ids.Remove(ids.Length - 1, ids.Length);
+            list.ForEach(id => str.Append($"ids={id}&"));
+            list.Remove(list.Last());
             
-            return ids.ToString();
+            return list.ToString()!;
         }
 
         [NonAction]
