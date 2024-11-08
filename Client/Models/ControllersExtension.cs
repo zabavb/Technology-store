@@ -21,17 +21,18 @@ namespace Client.Models
 
         public static async Task<List<Product>> GetProductsByIdsAsync(long[] ids, string baseAddress)
         {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(baseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/products/{ids}");
+            using HttpClient client = new();
+            client.BaseAddress = new Uri(baseAddress);
 
-                if (response.IsSuccessStatusCode)
-                    return JsonConvert.DeserializeObject<List<Product>>(await response.Content.ReadAsStringAsync())!;
-                else
-                    return new List<Product>();
-            }
+            string idsQuery = string.Join(",", ids);
+            HttpResponseMessage response = await client.GetAsync($"gateway/products/many?ids={idsQuery}");
+
+            if (response.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<List<Product>>(await response.Content.ReadAsStringAsync())!;
+            else
+                return new List<Product>();
         }
+
 
         public static async Task<User> GetUserByUsernameAsync(string username, string baseAddress)
         {

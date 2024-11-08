@@ -49,17 +49,16 @@ namespace ProductAPI.Controllers
             return model;
         }
 
-        // GET: api/Products/{ids}
-        [HttpGet("{ids}")]
-        public ActionResult<List<Product>> GetProductsByIds(long[] ids)
+        // GET: api/Products/many?ids=5,6,7
+        [HttpGet("many")]
+        public ActionResult<List<Product>> GetProductsByIds([FromQuery] long[] ids)
         {
             if (_context.Products == null)
                 return NotFound();
 
-            List<Product> products = new();
-            ids.ToList().ForEach(id => products = (List<Product>)_context.Products.Where(p => p.Id.Equals(id)));
+            var products = _context.Products.Where(p => ids.Contains(p.Id)).ToList();
 
-            if (products.IsNullOrEmpty())
+            if (products.Count == 0)
                 return NotFound();
 
             return products;
@@ -76,7 +75,6 @@ namespace ProductAPI.Controllers
                     return Problem("Entity set 'Products' is null.");
                 _context.Products.Add(model);
                 await _context.SaveChangesAsync();
-
 
                 return Ok();
             }

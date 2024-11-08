@@ -26,7 +26,7 @@
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/api/products/{ids}",
+      "DownstreamPathTemplate": "/api/products/many",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -34,7 +34,7 @@
           "Port": 7063
         }
       ],
-      "UpstreamPathTemplate": "/gateway/products/{ids}",
+      "UpstreamPathTemplate": "/gateway/products/many",
       "UpstreamHttpMethod": [ "GET" ]
     },
     //================== User API ==================

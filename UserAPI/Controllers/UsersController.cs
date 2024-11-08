@@ -101,8 +101,8 @@ namespace UserAPI.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok();
-
             }
+
             return BadRequest(ModelState);
         }
 
