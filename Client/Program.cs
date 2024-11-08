@@ -8,8 +8,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = new PathString("/Users/Login");
-        options.AccessDeniedPath = new PathString("/Users/Login");
+        options.LoginPath = new PathString("/Client/Login");
+        options.AccessDeniedPath = new PathString("/Client/Login");
     });
 
 var app = builder.Build();
@@ -32,6 +32,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Users}/{action=Login}/{id?}");
+    pattern: "{controller=Client}/{action=ProductList}");
 
 app.Run();
