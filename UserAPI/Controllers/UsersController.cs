@@ -198,11 +198,11 @@ namespace UserAPI.Controllers
             if (user == null)
                 return NotFound();
 
-            var product = user.Basket.FirstOrDefault(p => p.Id.Equals(id));
-            if (product == null)
+            long basketId = user.BasketIds.FirstOrDefault(bId => bId.Equals(id));
+            if (basketId == 0)
                 return NotFound();
 
-            user.BasketIds.Remove(product.Id);
+            user.BasketIds.Remove(basketId);
             await _context.SaveChangesAsync();
 
             return Ok();
