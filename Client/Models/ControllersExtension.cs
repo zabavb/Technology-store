@@ -39,7 +39,7 @@ namespace Client.Models
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/users/{username}");
+                HttpResponseMessage response = await client.GetAsync($"gateway/users/username/{username}");
 
                 return response.IsSuccessStatusCode ?
                     JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :

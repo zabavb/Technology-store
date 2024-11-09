@@ -51,7 +51,7 @@
       "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
-      "DownstreamPathTemplate": "/api/users/{username}",
+      "DownstreamPathTemplate": "/api/users/username/{username}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -59,8 +59,8 @@
           "Port": 7114
         }
       ],
-      "UpstreamPathTemplate": "/gateway/users/{username}",
-      "UpstreamHttpMethod": [ "POST", "GET" ]
+      "UpstreamPathTemplate": "/gateway/users/username/{username}",
+      "UpstreamHttpMethod": [ "GET" ]
     },
     {
       "DownstreamPathTemplate": "/api/users/{id}",

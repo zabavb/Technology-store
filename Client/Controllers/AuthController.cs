@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using Library.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Reflection;
 
 namespace Client.Controllers
 {
@@ -59,13 +60,18 @@ namespace Client.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult MyProfile(Status status, User user)
+        public async Task<IActionResult> MyProfile(Status status, User user)
         {
             if (!string.IsNullOrEmpty(status.Message))
             {
                 ViewBag.Status = status;
                 return View(new User());
             }
+
+            if (user.Id.Equals(0))
+                user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
+            if (user.Id.Equals(0))
+                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
 
             return View(user);
         }
