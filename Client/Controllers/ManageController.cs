@@ -343,6 +343,16 @@ namespace Client.Controllers
                 return View("Order/Manage", model);
             }
 
+            var items = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, null, model.ItemsIds);
+            if (items.Count.Equals(0))
+            {
+                ViewBag.IsPost = true;
+                ViewBag.Status = new Status(false, $"Could not find any product by ids: {model.ItemsIds.ToString()}");
+                return View("Order/Manage", model);
+            }
+
+            model.Items = items;
+            
             using (HttpClient client = new())
             {
                 var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToOrder(model, user)), Encoding.UTF8, "application/json");
@@ -350,7 +360,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync("gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return RedirectToAction("OrderList", new Status(true, $"The order {model.ReceiverUsername} has been successfully made"));
+                    return RedirectToAction("OrderList", new Status(true, $"Order for {model.ReceiverUsername} has been successfully made"));
                 else
                 {
                     ViewBag.IsPost = true;
@@ -369,12 +379,18 @@ namespace Client.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    ViewBag.IsPost = false;
                     var order = JsonConvert.DeserializeObject<Order>(await response.Content.ReadAsStringAsync());
                     if (order == null)
                         return RedirectToAction("OrderList", new Status(false, "Could not find the order"));
 
-                    return View("Order/Manage", new OrderViewModel(order));
+                    var items = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, order.ItemsIds.ToArray(), null);
+                    if (items == null)
+                        return RedirectToAction("OrderList", new Status(false, "Could not load order's items"));
+
+                    var receiver = await GetUserByIdAsync(order.ReceiverId);
+
+                    ViewBag.IsPost = false;
+                    return View("Order/Manage", new OrderViewModel(order, items, receiver));
                 }
                 else
                     return RedirectToAction("OrderList", new Status(false, "Order data is missing"));
