@@ -199,22 +199,22 @@ namespace Client.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostProduct(ManageProductViewModel model)
+        public async Task<IActionResult> PostProduct(ManageProductViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.IsPost = true;
-                return View("Product/Manage", model);
+                return View("Product/Manage", viewModel);
             }
 
             using (HttpClient client = new())
             {
-                var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToProduct(model)), Encoding.UTF8, "application/json");
+                var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToProduct(viewModel)), Encoding.UTF8, "application/json");
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.PostAsync("gateway/products", content);
 
                 if (response.IsSuccessStatusCode)
-                    return RedirectToAction("ProductList", new Status(true, $"The product {model.Brand} {model.Model} has been successfully added"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product {viewModel.Brand} {viewModel.Model} has been successfully added"));
                 else
                 {
                     ViewBag.IsPost = true;
@@ -246,27 +246,27 @@ namespace Client.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PutProduct(ManageProductViewModel model)
+        public async Task<IActionResult> PutProduct(ManageProductViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.IsPost = false;
-                return View("Product/Manage", model);
+                return View("Product/Manage", viewModel);
             }
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToProduct(model)), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PutAsync($"gateway/products/{model.Id}", content);
+                StringContent content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToProduct(viewModel)), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PutAsync($"gateway/products/{viewModel.Id}", content);
 
                 if (response.IsSuccessStatusCode)
-                    return RedirectToAction("ProductList", new Status(true, $"The product {model.Brand} {model.Model} has been successfully updated"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product {viewModel.Brand} {viewModel.Model} has been successfully updated"));
                 else
                 {
                     ViewBag.IsPost = false;
-                    ViewBag.Status = new Status(false, $"Failed to update the product {model.Brand} {model.Model}");
-                    return View("Product/Manage", model);
+                    ViewBag.Status = new Status(false, $"Failed to update the product {viewModel.Brand} {viewModel.Model}");
+                    return View("Product/Manage", viewModel);
                 }
             }
         }
