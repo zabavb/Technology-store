@@ -10,19 +10,15 @@ namespace Client.Models.Orders
         public List<Product> Items { get; set; } = new();
 
         [Display(Name = "Receiver username")]
-        [Required(ErrorMessage = "Username of receiver is required")]
         public string ReceiverUsername { get; set; } = string.Empty;
 
         [Display(Name = "Receiver name")]
-        [Required(ErrorMessage = "Name of receiver is required")]
         public string ReceiverName { get; set; } = string.Empty;
 
         [Display(Name = "Receiver email")]
-        [Required(ErrorMessage = "Email of receiver is required")]
         public string ReceiverEmail { get; set; } = string.Empty;
 
         [Display(Name = "Receiver phone")]
-        [Required(ErrorMessage = "Phone of receiver is required")]
         public string ReceiverPhone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Country is required")]
