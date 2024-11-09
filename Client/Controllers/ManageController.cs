@@ -336,7 +336,7 @@ namespace Client.Controllers
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(model.ReceiverUsername, BaseAddress);
-            if (user == null)
+            if (user.Id.Equals(0))
             {
                 ViewBag.IsPost = true;
                 ViewBag.Status = new Status(false, "Could not find the user");
@@ -391,7 +391,7 @@ namespace Client.Controllers
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(model.ReceiverUsername, BaseAddress);
-            if (user == null)
+            if (user.Id.Equals(0))
             {
                 ViewBag.IsPost = false;
                 ViewBag.Status = new Status(false, "Could not find the user");
