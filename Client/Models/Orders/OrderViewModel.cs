@@ -1,5 +1,6 @@
 ﻿using Library.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace Client.Models.Orders
 {
@@ -25,13 +26,16 @@ namespace Client.Models.Orders
         public string ReceiverPhone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Country is required")]
+        [StringLength(32, MinimumLength = 2, ErrorMessage = "Country must be in range between 2 and 32 characters")]
         public string Country { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Locality is required")]
+        [StringLength(32, MinimumLength = 2, ErrorMessage = "Locality must be in range between 2 and 32 characters")]
         public string Locality { get; set; } = string.Empty;
         
         [Display(Name = "Receiver address")]
         [Required(ErrorMessage = "Address of receiver is required")]
+        [StringLength(32, MinimumLength = 2, ErrorMessage = "Address must be in range between 2 and 32 characters")]
         public string Address { get; set; } = string.Empty;
 
         [ScaffoldColumn(false)]
