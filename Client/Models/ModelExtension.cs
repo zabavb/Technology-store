@@ -7,6 +7,18 @@ namespace Client.Models
 {
     public static class ModelExtension
     {
+        public static User ToUser(RegisterViewModel model) =>
+            new User() {
+                Username = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Age = model.Age,
+                Email = model.Email,
+                Phone = model.Phone,
+                Password = model.Password,
+                Role = RoleType.User.ToString()
+            };
+
         public static User ToUser(ManageUserViewModel model) =>
             new User(
                 model.Id, model.Username, model.FirstName,
