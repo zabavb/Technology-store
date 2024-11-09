@@ -9,6 +9,7 @@ using System.Text;
 using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Reflection;
+using Library.Infrastructure;
 
 namespace Client.Controllers
 {
@@ -47,6 +48,45 @@ namespace Client.Controllers
             return View("MyProfile", user);
         }
 
+        //============================ Registering ============================
+
+        [HttpGet]
+        public IActionResult Register(Status? status)
+        {
+            if (!string.IsNullOrEmpty(status!.Message))
+                ViewBag.Status = status;
+
+            return View(new RegisterViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            
+            model.Password = UserExtension.HashPassword(model.Password);
+
+            using (HttpClient client = new())
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToUser(model)), Encoding.UTF8, "application/json");
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.PostAsync("gateway/users", content);
+
+                if (response.IsSuccessStatusCode)
+                    ViewBag.Status = new Status(true, $"You have been successfully registered");
+                else
+                    ViewBag.Status = new Status(true, $"Failed to register");
+            }
+
+            var user = await ControllersExtension.GetUserByUsernameAsync(model.Username, BaseAddress);
+
+            await CookieAuthenticationAsync(user.Username, user.Role!);
+
+            return View("MyProfile", user);
+        }
+
         //============================ Logging out ============================
 
         [Authorize]
@@ -65,7 +105,7 @@ namespace Client.Controllers
             if (!string.IsNullOrEmpty(status.Message))
             {
                 ViewBag.Status = status;
-                return View(new User());
+                return View(user);
             }
 
             if (user.Id.Equals(0))
