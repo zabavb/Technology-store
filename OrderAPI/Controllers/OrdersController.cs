@@ -45,7 +45,6 @@ namespace OrderAPI.Controllers
             else
             {
                 order.Items.ForEach(i => order.ItemsIds.Add(i.Id));
-                order.ReceiverId = order.Receiver.Id;
             }
 
             return order;
@@ -62,7 +61,6 @@ namespace OrderAPI.Controllers
                     return Problem("Entity set 'Order' is null.");
                 
                 order.Items.ForEach(i => order.ItemsIds.Add(i.Id));
-                order.ReceiverId = order.Receiver.Id;
 
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
@@ -90,7 +88,6 @@ namespace OrderAPI.Controllers
 
                 order.Items.ForEach(i => order.ItemsIds.Add(i.Id));
                 order.Items = model.Items;
-                order.ReceiverId = order.Receiver.Id;
                 order.Receiver = model.Receiver;
                 order.Country = model.Country;
                 order.Locality = model.Locality;

@@ -49,14 +49,14 @@ namespace ProductAPI.Controllers
             return model;
         }
 
-        // GET: api/Products/many?ids=5,6,7
+        // GET: api/Products/many?5&ids=6&ids=7
         [HttpGet("many")]
-        public ActionResult<List<Product>> GetProductsByIds([FromQuery] long[] ids)
+        public ActionResult<List<Product>> GetProductsByIds([FromQuery] string[] ids)
         {
             if (_context.Products == null)
                 return NotFound();
 
-            var products = _context.Products.Where(p => ids.Contains(p.Id)).ToList();
+            var products = _context.Products.Where(p => ids.Contains(p.Id.ToString())).ToList();
 
             if (products.Count == 0)
                 return NotFound();

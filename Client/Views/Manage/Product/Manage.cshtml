@@ -26,6 +26,7 @@ else
 <form asp-action="@action" method="post">
     <div class="validation" style="color: red" asp-validation-summary="ModelOnly"></div>
     <div>
+        <input class="visually-hidden" asp-for="Id" />
         <div class="mb-3 form-group">
             <label class="form-label" asp-for="Brand"></label>
             <input class="form-control" asp-for="Brand" />
