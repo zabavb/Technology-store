@@ -181,6 +181,9 @@ namespace Client.Controllers
         [NonAction]
         public string BuildStringIds(long[] ids)
         {
+            if (ids.Length == 0)
+                return string.Empty;
+
             List<long> list = ids.ToList();
             StringBuilder str = new StringBuilder();
 
