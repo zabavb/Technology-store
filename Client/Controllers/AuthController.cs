@@ -28,12 +28,12 @@ namespace Client.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = GetUserByUsernamePassword(model.Username, model.Password);
+            var user = await GetUserByUsernamePasswordAsync(model.Username, model.Password);
 
             if (user == null)
             {
@@ -41,9 +41,9 @@ namespace Client.Controllers
                 return View(model);
             }
 
-            CookieAuthenticationAsync(user.Result.Username, user.Result.Role!);
+            await CookieAuthenticationAsync(user.Username, user.Role!);
 
-            return RedirectToAction("MyProfile", user);
+            return View("MyProfile", user);
         }
 
         //============================ Logging out ============================
@@ -73,7 +73,7 @@ namespace Client.Controllers
         //============================ NonAction ============================
 
         [NonAction]
-        private async Task<User> GetUserByUsernamePassword(string username, string password)
+        private async Task<User> GetUserByUsernamePasswordAsync(string username, string password)
         {
             using (HttpClient client = new())
             {
@@ -87,24 +87,31 @@ namespace Client.Controllers
         }
 
         [NonAction]
-        private async void CookieAuthenticationAsync(string username, string role)
+        private async Task CookieAuthenticationAsync(string username, string role)
         {
-            using (HttpClient client = new())
+            List<Claim> claims = new()
             {
-                List<Claim> claims = new()
-                {
-                    new(ClaimsIdentity.DefaultNameClaimType, username),
-                    new(ClaimsIdentity.DefaultRoleClaimType, role),
-                };
+                new(ClaimsIdentity.DefaultNameClaimType, username),
+                new(ClaimsIdentity.DefaultRoleClaimType, role),
+            };
 
-                var claimsIdentity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
-                };
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-            }
+            var claimsIdentity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme,
+                ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
+            };
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
         }
+
     }
 }
