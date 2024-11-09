@@ -64,7 +64,7 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var ids = JsonConvert.DeserializeObject<long[]>(await response.Content.ReadAsStringAsync())!;
-                    var products = await ControllersExtension.GetProductsByIdsAsync(ids, BaseAddress);
+                    var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
 
                     if (products == null)
                         ViewBag.Status = new Status(false, "Failed to load basket");

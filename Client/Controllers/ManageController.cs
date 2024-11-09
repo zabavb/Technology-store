@@ -52,7 +52,7 @@ namespace Client.Controllers
             if (user == null)
                 ViewBag.Status = new Status(false, "Could not find the user");
             else
-                user.Basket = await ControllersExtension.GetProductsByIdsAsync(user.BasketIds.ToArray(), BaseAddress);
+                user.Basket = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, user.BasketIds.ToArray(), null);
 
             return View("User/View", user);
         }
@@ -106,7 +106,7 @@ namespace Client.Controllers
                     if (user == null)
                         return RedirectToAction("UserList", new Status(false, $"Could not find the user"));
                     else
-                        user.Basket = await ControllersExtension.GetProductsByIdsAsync(user.BasketIds.ToArray(), BaseAddress);
+                        user.Basket = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, user.BasketIds.ToArray(), null);
 
                     return View("User/Manage", new ManageUserViewModel(user));
                 }
