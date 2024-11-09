@@ -82,7 +82,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync("gateway/users", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("User/List", new Status(true, $"The user {model.Username} has been successfully registered"));
+                    return RedirectToAction("UserList", new Status(true, $"The user {model.Username} has been successfully registered"));
                 else
                 {
                     ViewBag.IsPost = true;
@@ -104,14 +104,14 @@ namespace Client.Controllers
                     ViewBag.IsPost = false;
                     var user = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
                     if (user == null)
-                        return View("User/List", new Status(false, $"Could not find the user"));
+                        return RedirectToAction("UserList", new Status(false, $"Could not find the user"));
                     else
                         user.Basket = await ControllersExtension.GetProductsByIdsAsync(user.BasketIds.ToArray(), BaseAddress);
 
                     return View("User/Manage", new ManageUserViewModel(user));
                 }
                 else
-                    return View("User/List", new Status(false, $"User data is missing"));
+                    return RedirectToAction("UserList", new Status(false, $"User data is missing"));
             }
         }
 
@@ -124,6 +124,8 @@ namespace Client.Controllers
                 return View("User/Manage", model);
             }
 
+            model.Password = UserExtension.HashPassword(model.Password);
+
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
@@ -131,7 +133,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PutAsync($"gateway/users/{model.Id}", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("User/List", new Status(true, $"The user {model.Username} has been successfully updated"));
+                    return RedirectToAction("UserList", new Status(true, $"The user {model.Username} has been successfully updated"));
                 else
                 {
                     ViewBag.IsPost = false;
@@ -149,7 +151,7 @@ namespace Client.Controllers
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{id}");
 
-                return View("User/List", response.IsSuccessStatusCode ?
+                return RedirectToAction("UserList", response.IsSuccessStatusCode ?
                     new Status(true, "User has been successfully deleted") :
                     new Status(false, "An issue occurred during the deletion of the user"));
             }
@@ -212,7 +214,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync("gateway/products", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, $"The product {model.Brand} {model.Model} has been successfully added"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product {model.Brand} {model.Model} has been successfully added"));
                 else
                 {
                     ViewBag.IsPost = true;
@@ -233,13 +235,13 @@ namespace Client.Controllers
                 {
                     var product = JsonConvert.DeserializeObject<Product>(await response.Content.ReadAsStringAsync());
                     if (product == null)
-                        return View("Product/List", new Status(false, "Could not find the product"));
+                        return RedirectToAction("ProductList", new Status(false, "Could not find the product"));
 
                     ViewBag.IsPost = false;
                     return View("Product/Manage", new ManageProductViewModel(product));
                 }
                 else
-                    return View("Product/List", new Status(false, "Product data is missing"));
+                    return RedirectToAction("ProductList", new Status(false, "Product data is missing"));
             }
         }
 
@@ -259,7 +261,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PutAsync($"gateway/products/{model.Id}", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, $"The product {model.Brand} {model.Model} has been successfully updated"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product {model.Brand} {model.Model} has been successfully updated"));
                 else
                 {
                     ViewBag.IsPost = false;
@@ -277,7 +279,7 @@ namespace Client.Controllers
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/products/{id}");
 
-                return View("Product/List", response.IsSuccessStatusCode ?
+                return RedirectToAction("ProductList", response.IsSuccessStatusCode ?
                     new Status(true, "Product has been successfully deleted") :
                     new Status(false, "An issue occurred during the deletion of the product"));
             }
@@ -348,7 +350,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync("gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Order/List", new Status(true, $"The order {model.ReceiverUsername} has been successfully made"));
+                    return RedirectToAction("OrderList", new Status(true, $"The order {model.ReceiverUsername} has been successfully made"));
                 else
                 {
                     ViewBag.IsPost = true;
@@ -370,12 +372,12 @@ namespace Client.Controllers
                     ViewBag.IsPost = false;
                     var order = JsonConvert.DeserializeObject<Order>(await response.Content.ReadAsStringAsync());
                     if (order == null)
-                        return View("Order/List", new Status(false, "Could not find the order"));
+                        return RedirectToAction("OrderList", new Status(false, "Could not find the order"));
 
                     return View("Order/Manage", new OrderViewModel(order));
                 }
                 else
-                    return View("Order/List", new Status(false, "Order data is missing"));
+                    return RedirectToAction("OrderList", new Status(false, "Order data is missing"));
             }
         }
 
@@ -403,7 +405,7 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PutAsync($"gateway/orders/{model.Id}", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Order/List", new Status(true, $"The order {model.Id} has been successfully updated"));
+                    return RedirectToAction("OrderList", new Status(true, $"The order {model.Id} has been successfully updated"));
                 else
                 {
                     ViewBag.IsPost = false;
@@ -421,7 +423,7 @@ namespace Client.Controllers
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/orders/{id}");
 
-                return View("Order/List", response.IsSuccessStatusCode ?
+                return RedirectToAction("OrderList", response.IsSuccessStatusCode ?
                     new Status(true, "Order has been successfully deleted") :
                     new Status(false, "An issue occurred during the deletion of the order"));
             }
