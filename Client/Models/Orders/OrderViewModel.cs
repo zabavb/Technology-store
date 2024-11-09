@@ -9,6 +9,10 @@ namespace Client.Models.Orders
         public long Id { get; set; }
         public List<Product> Items { get; set; } = new();
 
+        [Display(Name = "Items ids (id,id,id,...)")]
+        [RegularExpression(@"^(\d+)(,\d+)*$", ErrorMessage = "The Items ids must be in the format: id,id,id with at least one id")]
+        public string ItemsIds { get; set; } = string.Empty;
+
         [Display(Name = "Receiver username")]
         public string ReceiverUsername { get; set; } = string.Empty;
 
@@ -46,13 +50,18 @@ namespace Client.Models.Orders
             ReceiverPhone = receiver.Phone;
         }
 
-        public OrderViewModel(Order order)
+        public OrderViewModel(Order order, List<Product> items, User receiver)
         {
-            Items = order.Items;
-            ReceiverUsername = order.Receiver.Username;
-            ReceiverName = order.Receiver.FirstName + order.Receiver.LastName;
-            ReceiverEmail = order.Receiver.Email;
-            ReceiverPhone = order.Receiver.Phone;
+            Id = order.Id;
+            Items = items;
+            ItemsIds = string.Join(",", order.ItemsIds);
+            ReceiverUsername = receiver.Username;
+            ReceiverName = receiver.FirstName + receiver.LastName;
+            ReceiverEmail = receiver.Email;
+            ReceiverPhone = receiver.Phone;
+            Country = order.Country;
+            Locality = order.Locality;
+            Address = order.Address;
         }
 
         public OrderViewModel() { }
