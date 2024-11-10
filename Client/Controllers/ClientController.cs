@@ -178,6 +178,21 @@ namespace Client.Controllers
             }
         }
 
+        [Authorize(Roles = "User, Moderator, Admin")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteOrder(long id)
+        {
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.DeleteAsync($"gateway/orders/{id}");
+
+                return RedirectToAction("Order/View", response.IsSuccessStatusCode ?
+                    new Status(true, "Order has been canceled") :
+                    new Status(false, "Could not cancel the order"));
+            }
+        }
+
         //================================= NonAction =================================
 
         [NonAction]
