@@ -27,27 +27,27 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.GetAsync("gateway/products");
 
                 if (response.IsSuccessStatusCode)
-                    return View(JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                    return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
                 else
                 {
-                    ViewBag.Status = new Status(false, "An issue occurred during the navigation to the product");
-                    return RedirectToAction("ProductList");
+                    ViewBag.Status = new Status(false, "Could not load products");
+                    return View("Product/List", new List<Product>());
                 }
             }
         }
 
         [HttpGet]
-        public IActionResult Product(Status status, long id)
+        public async Task<IActionResult> Product(Status status, long id)
         {
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
-            var product = ControllersExtension.GetProductByIdAsync(id, BaseAddress);
+            var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
                 ViewBag.Status = new Status(false, "Could not find the product");
 
-            return View(product!.Result);
+            return View("Product/View", product);
         }
 
         //================================= Basket =================================
