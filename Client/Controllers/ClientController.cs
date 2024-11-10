@@ -124,7 +124,7 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetOrder(long[] ids)
+        public async Task<IActionResult> Order(long[] ids)
         {
             List<Product> products = new List<Product>();
             double sum = 0;
@@ -144,13 +144,11 @@ namespace Client.Controllers
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null) {
                 ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("ProductList");
+                return View("Product/List");
             }
 
             ViewBag.Sum = sum;
-            OrderViewModel model = new OrderViewModel(products, user!);
-            
-            return View("Order", model);
+            return View("Order/View", new OrderViewModel(products, user!));
         }
 
         [Authorize(Roles = "User, Moderator, Admin")]
@@ -158,13 +156,13 @@ namespace Client.Controllers
         public async Task<IActionResult> PostOrder(OrderViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Order", model);
+                return View("Order/View", model);
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
             {
                 ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("ProductList");
+                return View("Product/List");
             }
 
             using (HttpClient client = new())
@@ -174,9 +172,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, $"An order '{model.Id}' has been successfully made"));
+                    return View("Product/List", new Status(true, $"An order '{model.Id}' has been successfully made"));
                 else
-                    return View("ProductList", new Status(true, $"An occurred while processing an order '{model.Id}'"));
+                    return View("Product/List", new Status(true, $"An occurred while processing an order '{model.Id}'"));
             }
         }
 
