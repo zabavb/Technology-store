@@ -28,12 +28,12 @@
             <h4 class="card-title">@item.Price</h4>
             <p class="card-text">@item.Details</p>
             <a asp-action="Product" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
-            <a asp-action="DeleteFromBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
-            <a asp-action="GetOrder" asp-route-id="@item.Id" class="btn btn-outline-dark">Purchase</a>
+            <a asp-action="DeleteBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
+            <a asp-action="Order" asp-route-id="@item.Id" class="btn btn-outline-dark">Purchase</a>
         </div>
     }
 </div>
 <div class="row">
     <h3>$@ViewBag.Sum</h3>
-    <a asp-action="GetOrder" asp-route-ids="@ViewBag.Ids" class="btn btn-outline-dark">Purchase</a>
+    <a asp-action="Order" asp-route-ids="@ViewBag.Ids" class="btn btn-outline-dark">Purchase</a>
 </div>
