@@ -89,7 +89,7 @@ namespace Client.Controllers
             var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
-                return View("Product/List", new Status(false, "Could not find the product"));
+                return RedirectToAction("ProductList", new Status(false, "Could not find the product"));
 
             using (HttpClient client = new())
             {
@@ -98,9 +98,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/users/{User.Identity!.Name}/basket", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, $"The product '{product.Name}' has been added to basket"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product '{product.Name}' has been added to basket"));
                 else
-                    return View("Product/List", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
             }
         }
 
@@ -114,9 +114,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, "Product has been successfully removed"));
+                    return RedirectToAction("ProductList", new Status(true, "Product has been successfully removed"));
                 else
-                    return View("Product/List", new Status(false, "Failed to remove product from the basket"));
+                    return RedirectToAction("ProductList", new Status(false, "Failed to remove product from the basket"));
             }
         }
 
@@ -142,10 +142,8 @@ namespace Client.Controllers
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
-            if (user == null) {
-                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("Product/List");
-            }
+            if (user == null)
+                return RedirectToAction("ProductList", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
 
             ViewBag.Sum = sum;
             return View("Order/View", new OrderViewModel(products, user!));
@@ -160,10 +158,7 @@ namespace Client.Controllers
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
-            {
-                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("Product/List");
-            }
+                return RedirectToAction("ProductList", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
 
             using (HttpClient client = new())
             {
@@ -172,9 +167,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, $"An order '{model.Id}' has been successfully made"));
+                    return RedirectToAction("ProductList", new Status(true, $"An order '{model.Id}' has been successfully made"));
                 else
-                    return View("Product/List", new Status(true, $"An occurred while processing an order '{model.Id}'"));
+                    return RedirectToAction("ProductList", new Status(true, $"An occurred while processing an order '{model.Id}'"));
             }
         }
 
@@ -187,7 +182,7 @@ namespace Client.Controllers
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/orders/{id}");
 
-                return RedirectToAction("Order/View", response.IsSuccessStatusCode ?
+                return RedirectToAction("Basket", response.IsSuccessStatusCode ?
                     new Status(true, "Order has been canceled") :
                     new Status(false, "Could not cancel the order"));
             }
