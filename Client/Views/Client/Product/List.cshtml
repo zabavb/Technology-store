@@ -1,9 +1,5 @@
 ﻿@model IEnumerable<Library.Models.Product>
 
-@{
-    ViewData["Title"] = "ProductList";
-}
-
 @if (ViewBag.Status != null)
 {
     @if (ViewBag.Status.IsSuccess)
@@ -16,8 +12,6 @@
     }
 }
 
-<h1>Products</h1>
-
 <div class="d-flex flex-wrap">
     @foreach (var item in Model)
     {
@@ -27,7 +21,7 @@
             <h4 class="card-title">@item.Price</h4>
             <p class="card-text">@item.Details</p>
             <a asp-action="Product" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
-            <a asp-action="PostToBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">To basket</a>
+            <a asp-action="PostBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">To basket</a>
         </div>
     }
 </div>

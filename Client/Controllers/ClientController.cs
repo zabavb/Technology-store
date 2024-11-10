@@ -27,34 +27,34 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.GetAsync("gateway/products");
 
                 if (response.IsSuccessStatusCode)
-                    return View(JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                    return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
                 else
                 {
-                    ViewBag.Status = new Status(false, "An issue occurred during the navigation to the product");
-                    return RedirectToAction("ProductList");
+                    ViewBag.Status = new Status(false, "Could not load products");
+                    return View("Product/List", new List<Product>());
                 }
             }
         }
 
         [HttpGet]
-        public IActionResult Product(Status status, long id)
+        public async Task<IActionResult> Product(Status status, long id)
         {
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
-            var product = ControllersExtension.GetProductByIdAsync(id, BaseAddress);
+            var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
                 ViewBag.Status = new Status(false, "Could not find the product");
 
-            return View(product!.Result);
+            return View("Product/View", product);
         }
 
         //================================= Basket =================================
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetBasket()
+        public async Task<IActionResult> Basket()
         {
             using (HttpClient client = new())
             {
@@ -64,29 +64,32 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var ids = JsonConvert.DeserializeObject<long[]>(await response.Content.ReadAsStringAsync())!;
+                    
                     var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
-
                     if (products == null)
                         ViewBag.Status = new Status(false, "Failed to load basket");
                     
                     ViewBag.Ids = BuildStringIds(ids);
                     ViewBag.Sum = CountSum(products!);
                     
-                    return View("BasketList", products);
+                    return View("Basket/View", products);
                 }
                 else
-                    return View("BasketList", new List<Product>());
+                {
+                    ViewBag.Status = new Status(false, "Failed to load basket");
+                    return View("Basket/View", new List<Product>());
+                }
             }
         }
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> PostToBasket(long id)
+        public async Task<IActionResult> PostBasket(long id)
         {
             var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
-                return View("ProductList", new Status(false, "Could not find the product"));
+                return View("Product/List", new Status(false, "Could not find the product"));
 
             using (HttpClient client = new())
             {
@@ -95,15 +98,15 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/users/{User.Identity!.Name}/basket", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, $"The product '{product.Name}' has been added to basket"));
+                    return View("Product/List", new Status(true, $"The product '{product.Name}' has been added to basket"));
                 else
-                    return View("ProductList", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
+                    return View("Product/List", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
             }
         }
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> DeleteFromBasket(long id)
+        public async Task<IActionResult> DeleteBasket(long id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -111,8 +114,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, "Product has been successfully removed"));
-                return View("ProductList", new Status(false, "Failed to remove product from the basket"));
+                    return View("Product/List", new Status(true, "Product has been successfully removed"));
+                else
+                    return View("Product/List", new Status(false, "Failed to remove product from the basket"));
             }
         }
 
@@ -120,7 +124,7 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetOrder(long[] ids)
+        public async Task<IActionResult> Order(long[] ids)
         {
             List<Product> products = new List<Product>();
             double sum = 0;
@@ -140,13 +144,11 @@ namespace Client.Controllers
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null) {
                 ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("ProductList");
+                return View("Product/List");
             }
 
             ViewBag.Sum = sum;
-            OrderViewModel model = new OrderViewModel(products, user!);
-            
-            return View("Order", model);
+            return View("Order/View", new OrderViewModel(products, user!));
         }
 
         [Authorize(Roles = "User, Moderator, Admin")]
@@ -154,13 +156,13 @@ namespace Client.Controllers
         public async Task<IActionResult> PostOrder(OrderViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Order", model);
+                return View("Order/View", model);
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
             {
                 ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("ProductList");
+                return View("Product/List");
             }
 
             using (HttpClient client = new())
@@ -170,9 +172,24 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, $"An order '{model.Id}' has been successfully made"));
+                    return View("Product/List", new Status(true, $"An order '{model.Id}' has been successfully made"));
                 else
-                    return View("ProductList", new Status(true, $"An occurred while processing an order '{model.Id}'"));
+                    return View("Product/List", new Status(true, $"An occurred while processing an order '{model.Id}'"));
+            }
+        }
+
+        [Authorize(Roles = "User, Moderator, Admin")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteOrder(long id)
+        {
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.DeleteAsync($"gateway/orders/{id}");
+
+                return RedirectToAction("Order/View", response.IsSuccessStatusCode ?
+                    new Status(true, "Order has been canceled") :
+                    new Status(false, "Could not cancel the order"));
             }
         }
 
