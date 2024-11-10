@@ -54,7 +54,7 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetBasket()
+        public async Task<IActionResult> Basket()
         {
             using (HttpClient client = new())
             {
@@ -64,29 +64,32 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var ids = JsonConvert.DeserializeObject<long[]>(await response.Content.ReadAsStringAsync())!;
+                    
                     var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
-
                     if (products == null)
                         ViewBag.Status = new Status(false, "Failed to load basket");
                     
                     ViewBag.Ids = BuildStringIds(ids);
                     ViewBag.Sum = CountSum(products!);
                     
-                    return View("BasketList", products);
+                    return View("Basket/View", products);
                 }
                 else
-                    return View("BasketList", new List<Product>());
+                {
+                    ViewBag.Status = new Status(false, "Failed to load basket");
+                    return View("Basket/View", new List<Product>());
+                }
             }
         }
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> PostToBasket(long id)
+        public async Task<IActionResult> PostBasket(long id)
         {
             var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
-                return View("ProductList", new Status(false, "Could not find the product"));
+                return View("Product/List", new Status(false, "Could not find the product"));
 
             using (HttpClient client = new())
             {
@@ -95,15 +98,15 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/users/{User.Identity!.Name}/basket", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, $"The product '{product.Name}' has been added to basket"));
+                    return View("Product/List", new Status(true, $"The product '{product.Name}' has been added to basket"));
                 else
-                    return View("ProductList", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
+                    return View("Product/List", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
             }
         }
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> DeleteFromBasket(long id)
+        public async Task<IActionResult> DeleteBasket(long id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -111,8 +114,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
 
                 if (response.IsSuccessStatusCode)
-                    return View("ProductList", new Status(true, "Product has been successfully removed"));
-                return View("ProductList", new Status(false, "Failed to remove product from the basket"));
+                    return View("Product/List", new Status(true, "Product has been successfully removed"));
+                else
+                    return View("Product/List", new Status(false, "Failed to remove product from the basket"));
             }
         }
 
