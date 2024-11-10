@@ -16,7 +16,7 @@ namespace Client.Models
                 if (response.IsSuccessStatusCode)
                     return JsonConvert.DeserializeObject<Product>(await response.Content.ReadAsStringAsync())!;
                 else
-                    return new Product();
+                    return null!;
             }
         }
 
@@ -38,7 +38,7 @@ namespace Client.Models
                 if (response.IsSuccessStatusCode)
                     return JsonConvert.DeserializeObject<List<Product>>(await response.Content.ReadAsStringAsync())!;
                 else
-                    return new List<Product>();
+                    return null!;
             }
         }
 
@@ -51,7 +51,7 @@ namespace Client.Models
 
                 return response.IsSuccessStatusCode ?
                     JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())! :
-                    new User();
+                    null!;
             }
         }
     }

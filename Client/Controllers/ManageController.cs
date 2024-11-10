@@ -40,7 +40,6 @@ namespace Client.Controllers
             }
         }
 
-        // May occurre an error, solution - rename action
         [HttpGet]
         public async Task<IActionResult> User(Status status, long id)
         {
@@ -336,7 +335,7 @@ namespace Client.Controllers
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(model.ReceiverUsername, BaseAddress);
-            if (user.Id.Equals(0))
+            if (user == null)
             {
                 ViewBag.IsPost = true;
                 ViewBag.Status = new Status(false, "Could not find the user");
@@ -344,7 +343,7 @@ namespace Client.Controllers
             }
 
             var items = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, null, model.ItemsIds);
-            if (items.Count.Equals(0))
+            if (items == null)
             {
                 ViewBag.IsPost = true;
                 ViewBag.Status = new Status(false, $"Could not find any product by ids: {model.ItemsIds.ToString()}");
@@ -388,6 +387,8 @@ namespace Client.Controllers
                         return RedirectToAction("OrderList", new Status(false, "Could not load order's items"));
 
                     var receiver = await GetUserByIdAsync(order.ReceiverId);
+                    if (receiver == null)
+                        return RedirectToAction("OrderList", new Status(false, "Could not find the user"));
 
                     ViewBag.IsPost = false;
                     return View("Order/Manage", new OrderViewModel(order, items, receiver));
@@ -407,7 +408,7 @@ namespace Client.Controllers
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(model.ReceiverUsername, BaseAddress);
-            if (user.Id.Equals(0))
+            if (user == null)
             {
                 ViewBag.IsPost = false;
                 ViewBag.Status = new Status(false, "Could not find the user");
@@ -458,7 +459,7 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())!;
                 else
-                    return new User();
+                    return null!;
             }
         }
 
@@ -473,7 +474,7 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return JsonConvert.DeserializeObject<Order>(await response.Content.ReadAsStringAsync())!;
                 else
-                    return new Order();
+                    return null!;
             }
         }
     }
