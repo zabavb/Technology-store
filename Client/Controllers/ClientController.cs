@@ -187,10 +187,9 @@ namespace Client.Controllers
         public async Task<IActionResult> Order(string ids, long id)
         {
             List<Product> products = new List<Product>();
-                var list = ids.Split(",").ToList();
-            
-            if (ids.Length > 0)
+            if (ids != null)
             {
+                var list = ids.Split(",").ToList();
                 foreach (var item in list)
                 {
                     var product = await ControllersExtension.GetProductByIdAsync(long.Parse(item), BaseAddress);
