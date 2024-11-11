@@ -24,20 +24,36 @@ namespace Client.Controllers
         //================================= User =================================
 
         [HttpGet]
-        public async Task<IActionResult> UserList(Status status)
+        public async Task<IActionResult> UserList(Status status, string search)
         {
+            ViewBag.Search = search;
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync("gateway/users");
 
-                if (response.IsSuccessStatusCode)
-                    return View("User/List", JsonConvert.DeserializeObject<IEnumerable<User>>(await response.Content.ReadAsStringAsync()));
+                if (!string.IsNullOrEmpty(search))
+                {
+                    HttpResponseMessage response = await client.GetAsync($"gateway/users/search/{search}");
+                    if (response.IsSuccessStatusCode)
+                        return View("User/List", JsonConvert.DeserializeObject<IEnumerable<User>>(await response.Content.ReadAsStringAsync()));
+                    else
+                    {
+                        ViewBag.Status = new Status(false, "An error occurred, search is currently unreachable");
+                        return View("User/List", new List<User>());
+                    }
+                }
                 else
-                    return View("ManagePanel", new Status(false, "Empty user list"));
+                {
+                    HttpResponseMessage response = await client.GetAsync("gateway/users");
+
+                    if (response.IsSuccessStatusCode)
+                        return View("User/List", JsonConvert.DeserializeObject<IEnumerable<User>>(await response.Content.ReadAsStringAsync()));
+                    else
+                        return View("User/List", new Status(false, "Empty user list"));
+                }
             }
         }
 
