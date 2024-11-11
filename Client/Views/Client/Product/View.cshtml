@@ -1,0 +1,28 @@
+﻿@model Library.Models.Product
+
+@{
+    ViewData["Title"] = @Model.Name;
+}
+
+@if (ViewBag.Status != null)
+{
+    @if (ViewBag.Status.IsSuccess)
+    {
+        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
+    }
+}
+
+<a asp-action="ProductList">Back</a>
+
+<div class="card card-body" style="width: 18rem; max-width: 320px">
+    <h4 class="card-title">@Model.Name</h4>
+    <h6 class="card-subtitle mb-2 text-muted">@Model.Producer</h6>
+    <h4 class="card-title">$@Model.Price</h4>
+    <p class="card-text">@Model.Details</p>
+    <a asp-action="PostBasket" asp-route-id="@Model.Id" class="btn btn-outline-dark">To basket</a>
+    <a asp-action="Order" asp-route-id="@Model.Id" class="btn btn-outline-dark">Purchase</a>
+</div>

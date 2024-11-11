@@ -8,6 +8,8 @@ using System.Security.Claims;
 using System.Text;
 using Library.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Reflection;
+using Library.Infrastructure;
 
 namespace Client.Controllers
 {
@@ -28,12 +30,12 @@ namespace Client.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = GetUserByUsernamePassword(model.Username, model.Password);
+            var user = await GetUserByUsernamePasswordAsync(model.Username, model.Password);
 
             if (user == null)
             {
@@ -41,9 +43,48 @@ namespace Client.Controllers
                 return View(model);
             }
 
-            CookieAuthenticationAsync(user.Result.Username, user.Result.Role!);
+            await CookieAuthenticationAsync(user.Username, user.Role!);
 
-            return RedirectToAction("MyProfile", user);
+            return View("MyProfile", user);
+        }
+
+        //============================ Registering ============================
+
+        [HttpGet]
+        public IActionResult Register(Status? status)
+        {
+            if (!string.IsNullOrEmpty(status!.Message))
+                ViewBag.Status = status;
+
+            return View(new RegisterViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            
+            model.Password = UserExtension.HashPassword(model.Password);
+
+            using (HttpClient client = new())
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(ModelExtension.ToUser(model)), Encoding.UTF8, "application/json");
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.PostAsync("gateway/users", content);
+
+                if (response.IsSuccessStatusCode)
+                    ViewBag.Status = new Status(true, $"You have been successfully registered");
+                else
+                    ViewBag.Status = new Status(true, $"Failed to register");
+            }
+
+            var user = await ControllersExtension.GetUserByUsernameAsync(model.Username, BaseAddress);
+
+            await CookieAuthenticationAsync(user.Username, user.Role!);
+
+            return View("MyProfile", user);
         }
 
         //============================ Logging out ============================
@@ -59,13 +100,18 @@ namespace Client.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult MyProfile(Status status, User user)
+        public async Task<IActionResult> MyProfile(Status status, User user)
         {
             if (!string.IsNullOrEmpty(status.Message))
             {
                 ViewBag.Status = status;
-                return View(new User());
+                return View(user);
             }
+
+            if (user.Id.Equals(0))
+                user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
+            if (user.Id.Equals(0))
+                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
 
             return View(user);
         }
@@ -73,7 +119,7 @@ namespace Client.Controllers
         //============================ NonAction ============================
 
         [NonAction]
-        private async Task<User> GetUserByUsernamePassword(string username, string password)
+        private async Task<User> GetUserByUsernamePasswordAsync(string username, string password)
         {
             using (HttpClient client = new())
             {
@@ -87,24 +133,31 @@ namespace Client.Controllers
         }
 
         [NonAction]
-        private async void CookieAuthenticationAsync(string username, string role)
+        private async Task CookieAuthenticationAsync(string username, string role)
         {
-            using (HttpClient client = new())
+            List<Claim> claims = new()
             {
-                List<Claim> claims = new()
-                {
-                    new(ClaimsIdentity.DefaultNameClaimType, username),
-                    new(ClaimsIdentity.DefaultRoleClaimType, role),
-                };
+                new(ClaimsIdentity.DefaultNameClaimType, username),
+                new(ClaimsIdentity.DefaultRoleClaimType, role),
+            };
 
-                var claimsIdentity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
-                };
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-            }
+            var claimsIdentity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme,
+                ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
+            };
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
         }
+
     }
 }

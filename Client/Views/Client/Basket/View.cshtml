@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Library.Models.Product>
 
 @{
-    ViewData["Title"] = "ProductList";
+    ViewData["Title"] = "Basket";
 }
 
 @if (ViewBag.Status != null)
@@ -16,18 +16,24 @@
     }
 }
 
-<h1>Products</h1>
+<a asp-action="ProductList">Back</a>
 
+<h1>Basket</h1>
 <div class="d-flex flex-wrap">
     @foreach (var item in Model)
     {
         <div class="card card-body" style="width: 18rem; max-width: 320px">
             <h4 class="card-title">@item.Name</h4>
             <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
-            <h4 class="card-title">@item.Price</h4>
+            <h4 class="card-title">$@item.Price</h4>
             <p class="card-text">@item.Details</p>
             <a asp-action="Product" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
-            <a asp-action="PostToBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">To basket</a>
+            <a asp-action="DeleteBasket" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
+            <a asp-action="Order" asp-route-id="@item.Id" class="btn btn-outline-dark">Purchase</a>
         </div>
     }
+</div>
+<div class="row">
+    <h3>$@ViewBag.Sum</h3>
+    <a asp-action="Order" asp-route-ids="@ViewBag.Ids" class="btn btn-outline-dark">Purchase</a>
 </div>

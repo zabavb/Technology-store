@@ -54,6 +54,23 @@ namespace UserAPI.Controllers
             return user;
         }
 
+        // GET: api/Users/username/{username}
+        [HttpGet("username/{username}")]
+        public async Task<ActionResult<User>> GetUser(string username)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(username));
+
+            if (user == null)
+                return NotFound();
+            else
+                user.Basket.ForEach(b => user.BasketIds.Add(b.Id));
+
+            return user;
+        }
+
         // GET: api/Users/username/password
         [HttpGet("{username}/{password}")]
         public async Task<ActionResult<User>> GetUserByUsernamePassword(string username, string password)
