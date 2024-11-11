@@ -46,7 +46,7 @@ namespace Client.Controllers
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
-            var user = await GetUserByIdAsync(id);
+            var user = await ControllersExtension.GetUserByIdAsync(id, BaseAddress);
 
             if (user == null)
                 ViewBag.Status = new Status(false, "Could not find the user");
@@ -386,7 +386,7 @@ namespace Client.Controllers
                     if (items == null)
                         return RedirectToAction("OrderList", new Status(false, "Could not load order's items"));
 
-                    var receiver = await GetUserByIdAsync(order.ReceiverId);
+                    var receiver = await ControllersExtension.GetUserByIdAsync(order.ReceiverId, BaseAddress);
                     if (receiver == null)
                         return RedirectToAction("OrderList", new Status(false, "Could not find the user"));
 
@@ -447,21 +447,6 @@ namespace Client.Controllers
         }
 
         //================================= NonAction =================================
-
-        [NonAction]
-        public async Task<User> GetUserByIdAsync(long id)
-        {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync($"gateway/users/{id}");
-
-                if (response.IsSuccessStatusCode)
-                    return JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())!;
-                else
-                    return null!;
-            }
-        }
 
         [NonAction]
         public async Task<Order> GetOrderByIdAsync(long id)

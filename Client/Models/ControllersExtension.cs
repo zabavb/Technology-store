@@ -54,5 +54,19 @@ namespace Client.Models
                     null!;
             }
         }
+
+        public static async Task<User> GetUserByIdAsync(long id, string baseAddress)
+        {
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri(baseAddress);
+                HttpResponseMessage response = await client.GetAsync($"gateway/users/{id}");
+
+                if (response.IsSuccessStatusCode)
+                    return JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync())!;
+                else
+                    return null!;
+            }
+        }
     }
 }
