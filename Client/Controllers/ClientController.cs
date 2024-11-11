@@ -72,7 +72,7 @@ namespace Client.Controllers
                     var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
                     if (products == null)
                         ViewBag.Status = new Status(false, "Failed to load basket");
-                    
+
                     StringBuilder str = new();
                     ids.ToList().ForEach(id => str.Append($"{id},"));
                     str.Remove(str.Length - 1, 1);
@@ -118,9 +118,9 @@ namespace Client.Controllers
         {
             if (await DeleteFromBasketAsync(id))
                 return RedirectToAction("Basket", new Status(true, "Product has been successfully removed"));
-                else
+            else
                 return RedirectToAction("Basket", new Status(false, "Failed to remove product from the basket"));
-            }
+        }
 
         //================================= Order =================================
 
@@ -134,14 +134,13 @@ namespace Client.Controllers
             if (ids.Length > 0)
             {
                 foreach (var item in list)
-            {
-                var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
-
-                if (product == null)
                 {
-                    ViewBag.Status = new Status(false, $"Could not find the product by id: {id}");
-                    continue;
-                }
+                    var product = await ControllersExtension.GetProductByIdAsync(long.Parse(item), BaseAddress);
+                    if (product == null)
+                    {
+                        ViewBag.Status = new Status(false, $"Could not find the product by id: {item}");
+                        continue;
+                    }
 
                     products.Add(product);
                 }
@@ -238,7 +237,7 @@ namespace Client.Controllers
 
             return res;
         }
-            
+
         [NonAction]
         public async Task<bool> DeleteFromBasketAsync(long id)
         {
