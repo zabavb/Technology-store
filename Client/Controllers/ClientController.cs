@@ -124,11 +124,14 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> Order(long[] ids)
+        public async Task<IActionResult> Order(string ids, long id)
         {
             List<Product> products = new List<Product>();
-            double sum = 0;
-            foreach (var id in ids)
+            var list = ids.Split(",").ToList();
+            
+            if (ids.Length > 0)
+            {
+                foreach (var item in list)
             {
                 var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
@@ -137,6 +140,16 @@ namespace Client.Controllers
                     ViewBag.Status = new Status(false, $"Could not find the product by id: {id}");
                     continue;
                 }
+
+                    products.Add(product);
+                }
+            }
+            else
+            {
+                var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
+                if (product == null)
+                    return RedirectToAction("Basket", new Status(false, $"Could not find the product by id: {id}"));
+
                 products.Add(product);
                 sum += product.Price;
             }
