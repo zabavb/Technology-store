@@ -116,17 +116,11 @@ namespace Client.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteBasket(long id)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
-
-                if (response.IsSuccessStatusCode)
-                    return RedirectToAction("ProductList", new Status(true, "Product has been successfully removed"));
+            if (await DeleteFromBasketAsync(id))
+                return RedirectToAction("Basket", new Status(true, "Product has been successfully removed"));
                 else
                 return RedirectToAction("Basket", new Status(false, "Failed to remove product from the basket"));
             }
-        }
 
         //================================= Order =================================
 
@@ -193,9 +187,13 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return RedirectToAction("ProductList", new Status(true, $"An order '{model.Id}' has been successfully made"));
+                {
+                    products.ForEach(p => DeleteFromBasketAsync(p.Id).Wait());
+
+                    return RedirectToAction("ProductList", new Status(true, $"Order has been successfully made"));
+                }
                 else
-                    return RedirectToAction("ProductList", new Status(true, $"An occurred while processing an order '{model.Id}'"));
+                    return RedirectToAction("ProductList", new Status(true, $"An error occurred while processing an order"));
             }
         }
 
@@ -241,7 +239,16 @@ namespace Client.Controllers
             return res;
         }
             
-            return sum;
+        [NonAction]
+        public async Task<bool> DeleteFromBasketAsync(long id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
+
+                return response.IsSuccessStatusCode;
+            }
         }
     }
 }
