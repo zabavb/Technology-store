@@ -7,7 +7,7 @@
 @if (ViewBag.Status != null)
 {
     <div class="alert @(ViewBag.Status.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show d-flex align-items-center position-fixed"
-         style="top: 70px; right: 20px; z-index: 1050; min-width: 250px;" role="alert">
+         style="top: 70px; right: 20px; z-index: 1050; min-width: 300px;" role="alert">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
             @if (ViewBag.Status.IsSuccess)
             {
@@ -23,36 +23,40 @@
     </div>
 }
 
-<div class="container mt-4">
-    <h1 class="text-center mb-4">My Profile</h1>
-    <div class="card shadow-sm mb-4">
+<div class="container mt-5">
+    <h1 class="text-center text-primary mb-4">@ViewData["Title"]</h1>
+
+    <div class="card shadow-lg mb-4">
         <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-3 fw-bold">Username:</dt>
-                <dd class="col-sm-9">@Model.Username</dd>
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <img src="https://img.icons8.com/3d-fluency/100/person-male--v4.png" alt="Profile Picture" class="rounded-circle img-fluid mb-3 shadow-sm" />
+                    <h4 class="text-primary">@Model.Username</h4>
+                </div>
+                <div class="col-md-9">
+                    <dl class="row">
+                        <dt class="col-sm-3 text-secondary">Full Name:</dt>
+                        <dd class="col-sm-9">@Model.FirstName @Model.LastName</dd>
 
-                <dt class="col-sm-3 fw-bold">First Name:</dt>
-                <dd class="col-sm-9">@Model.FirstName</dd>
+                        <dt class="col-sm-3 text-secondary">Age:</dt>
+                        <dd class="col-sm-9">@Model.Age</dd>
 
-                <dt class="col-sm-3 fw-bold">Last Name:</dt>
-                <dd class="col-sm-9">@Model.LastName</dd>
+                        <dt class="col-sm-3 text-secondary">Email:</dt>
+                        <dd class="col-sm-9">@Model.Email</dd>
 
-                <dt class="col-sm-3 fw-bold">Age:</dt>
-                <dd class="col-sm-9">@Model.Age</dd>
+                        <dt class="col-sm-3 text-secondary">Phone:</dt>
+                        <dd class="col-sm-9">@Model.Phone</dd>
 
-                <dt class="col-sm-3 fw-bold">Email:</dt>
-                <dd class="col-sm-9">@Model.Email</dd>
-
-                <dt class="col-sm-3 fw-bold">Phone:</dt>
-                <dd class="col-sm-9">@Model.Phone</dd>
-
-                <dt class="col-sm-3 fw-bold">Role:</dt>
-                <dd class="col-sm-9">@Model.Role</dd>
-            </dl>
+                        <dt class="col-sm-3 text-secondary">Role:</dt>
+                        <dd class="col-sm-9">@Model.Role</dd>
+                    </dl>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center">
-        <a asp-controller="Client" asp-action="Basket" class="btn btn-outline-dark me-2">Basket</a>
-        <a asp-controller="Client" asp-action="OrderList" class="btn btn-outline-dark">Order</a>
+
+    <div class="d-flex justify-content-center mt-4">
+        <a asp-controller="Client" asp-action="Basket" class="btn btn-outline-primary me-3 shadow-sm w-100 w-sm-auto">Basket</a>
+        <a asp-controller="Client" asp-action="OrderList" class="btn btn-outline-success shadow-sm w-100 w-sm-auto">Order</a>
     </div>
 </div>
