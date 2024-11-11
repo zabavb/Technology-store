@@ -159,14 +159,13 @@ namespace Client.Controllers
                     return RedirectToAction("Basket", new Status(false, $"Could not find the product by id: {id}"));
 
                 products.Add(product);
-                sum += product.Price;
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
                 return RedirectToAction("ProductList", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
 
-            ViewBag.Sum = sum;
+            ViewBag.Sum = CountSum(products);
             return View("Order/View", new OrderViewModel(products, user!));
         }
 
@@ -237,6 +236,10 @@ namespace Client.Controllers
         {
             double sum = 0;
             products.ForEach(p => sum += p.Price);
+            double res = Math.Round(sum, 2);
+
+            return res;
+        }
             
             return sum;
         }
