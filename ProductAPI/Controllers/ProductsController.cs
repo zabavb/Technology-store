@@ -10,6 +10,9 @@ using ProductAPI.Models;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Core.Types;
+using System.Drawing.Drawing2D;
+using System.Runtime.ConstrainedExecution;
 
 namespace ProductAPI.Controllers
 {
@@ -42,6 +45,23 @@ namespace ProductAPI.Controllers
                 return NotFound();
 
             var model = await _context.Products.FindAsync(id);
+
+            if (model == null)
+                return NotFound();
+
+            return model;
+        }
+
+        // GET: api/Products/search/{search}
+        [HttpGet("search/{search}")]
+        public async Task<ActionResult<List<Product>>> GetProducts(string search)
+        {
+            if (_context.Products == null)
+                return NotFound();
+
+            var model = await _context.Products.Where(p =>
+                p.Name.ToLower().Contains(search.ToLower())
+            ).ToListAsync();
 
             if (model == null)
                 return NotFound();

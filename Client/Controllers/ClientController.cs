@@ -17,22 +17,37 @@ namespace Client.Controllers
         //================================= Product =================================
 
         [HttpGet]
-        public async Task<IActionResult> ProductList(Status status)
+        public async Task<IActionResult> ProductList(Status status, string search)
         {
+            ViewBag.Search = search;
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync("gateway/products");
-
-                if (response.IsSuccessStatusCode)
-                    return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                
+                if (!string.IsNullOrEmpty(search))
+                {
+                    HttpResponseMessage response = await client.GetAsync($"gateway/products/search/{search}");
+                    if (response.IsSuccessStatusCode)
+                        return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                    else
+                    {
+                        ViewBag.Status = new Status(false, "An error occurred, search is currently unreachable");
+                        return View("Product/List", new List<Product>());
+                    }
+                }
                 else
                 {
-                    ViewBag.Status = new Status(false, "Could not load products");
-                    return View("Product/List", new List<Product>());
+                    HttpResponseMessage response = await client.GetAsync("gateway/products");
+                    if (response.IsSuccessStatusCode)
+                        return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                    else
+                    {
+                        ViewBag.Status = new Status(false, "Could not load products");
+                        return View("Product/List", new List<Product>());
+                    }
                 }
             }
         }
