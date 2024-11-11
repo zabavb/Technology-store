@@ -32,19 +32,20 @@
 }
 else
 {
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="d-flex flex-wrap justify-content-around">
         @foreach (var item in Model)
         {
-            <div class="col">
-                <div class="card shadow-lg border-0 rounded">
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-1" style="background-color: #f9fafb;">
                     <div class="card-body">
-                        <h5 class="card-title text-primary">@item.Name</h5>
+                        <h5 class="card-title text-primary">
+                            <a asp-action="Product" asp-route-id="@item.Id" class="text-decoration-none">@item.Name</a>
+                        </h5>
                         <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
                         <p class="card-text">@item.Details</p>
                         <div class="d-flex justify-content-between">
                             <span class="text-success h4">$@item.Price</span>
                             <div>
-                                <a asp-action="Product" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">View</a>
                                 <a asp-action="PostBasket" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">To Basket</a>
                             </div>
                         </div>
