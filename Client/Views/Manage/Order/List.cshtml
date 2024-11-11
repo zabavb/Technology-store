@@ -20,30 +20,44 @@
 
 <h1>Orders</h1>
 <a asp-action="PostOrder" class="btn btn-outline-dark">Create an order</a>
-<div class="d-flex flex-wrap">
-    @foreach (var item in Model)
-    {
-
-        <div class="card card-body" style="width: 18rem; max-width: 320px">
-            <h4 class="card-title">@item.Id</h4>
-            <h6 class="card-subtitle mb-2 text-muted">@item.Country, @item.Locality, @item.Address</h6>
-            <h4 class="card-title">
-            @foreach (var product in item.Items)
-            {
-                if (!product.Equals(item.Items.Last()))
-                {
-                    <span>@product.Name, </span>
-                }
-                else
-                {
-                    <span>@product.Name</span>
-                }
-            }
-            </h4>
-            <h4 class="card-title">@item.Receiver.FirstName @item.Receiver.LastName <span class="mb-2 text-muted">@item.Receiver.Username</span></h4>
-            <p class="card-text">@item.DeliveryDate.ToString()</p>
-            <a asp-action="Order" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
-            <a asp-action="DeleteOrder" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
-        </div>
-    }
+<div class="mb-3 form-group">
+    <form asp-action="OrderList" method="get">
+        <input type="text" name="search" placeholder="Search orders by id ..." class="form-control" value="@ViewBag.Search" />
+        <button type="submit" class="btn btn-outline-dark">Search</button>
+    </form>
 </div>
+
+@if (Model.Count() == 0)
+{
+    <h4>Empty</h4>
+}
+else
+{
+    <div class="d-flex flex-wrap">
+        @foreach (var item in Model)
+        {
+    
+            <div class="card card-body" style="width: 18rem; max-width: 320px">
+                <h4 class="card-title">@item.Id</h4>
+                <h6 class="card-subtitle mb-2 text-muted">@item.Country, @item.Locality, @item.Address</h6>
+                <h4 class="card-title">
+                @foreach (var product in item.Items)
+                {
+                    if (!product.Equals(item.Items.Last()))
+                    {
+                        <span>@product.Name, </span>
+                    }
+                    else
+                    {
+                        <span>@product.Name</span>
+                    }
+                }
+                </h4>
+                <h4 class="card-title">@item.Receiver.FirstName @item.Receiver.LastName <span class="mb-2 text-muted">@item.Receiver.Username</span></h4>
+                <p class="card-text">@item.DeliveryDate.ToString()</p>
+                <a asp-action="Order" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
+                <a asp-action="DeleteOrder" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
+            </div>
+        }
+    </div>
+}
