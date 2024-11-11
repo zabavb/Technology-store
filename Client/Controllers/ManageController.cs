@@ -6,6 +6,7 @@ using Library.Infrastructure;
 using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
@@ -23,20 +24,36 @@ namespace Client.Controllers
         //================================= User =================================
 
         [HttpGet]
-        public async Task<IActionResult> UserList(Status status)
+        public async Task<IActionResult> UserList(Status status, string search)
         {
+            ViewBag.Search = search;
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync("gateway/users");
 
-                if (response.IsSuccessStatusCode)
-                    return View("User/List", JsonConvert.DeserializeObject<IEnumerable<User>>(await response.Content.ReadAsStringAsync()));
+                if (!string.IsNullOrEmpty(search))
+                {
+                    HttpResponseMessage response = await client.GetAsync($"gateway/users/search/{search}");
+                    if (response.IsSuccessStatusCode)
+                        return View("User/List", JsonConvert.DeserializeObject<IEnumerable<User>>(await response.Content.ReadAsStringAsync()));
+                    else
+                    {
+                        ViewBag.Status = new Status(false, "An error occurred, search is currently unreachable");
+                        return View("User/List", new List<User>());
+                    }
+                }
                 else
-                    return View("ManagePanel", new Status(false, "Empty user list"));
+                {
+                    HttpResponseMessage response = await client.GetAsync("gateway/users");
+
+                    if (response.IsSuccessStatusCode)
+                        return View("User/List", JsonConvert.DeserializeObject<IEnumerable<User>>(await response.Content.ReadAsStringAsync()));
+                    else
+                        return View("User/List", new Status(false, "Empty user list"));
+                }
             }
         }
 
@@ -157,22 +174,41 @@ namespace Client.Controllers
         }
 
         //================================= Product =================================
-
+        
         [HttpGet]
-        public async Task<IActionResult> ProductList(Status status)
+        public async Task<IActionResult> ProductList(Status status, string search)
         {
+            ViewBag.Search = search;
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync("gateway/products");
-
-                if (response.IsSuccessStatusCode)
-                    return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                
+                if (!string.IsNullOrEmpty(search))
+                {
+                    HttpResponseMessage response = await client.GetAsync($"gateway/products/search/{search}");
+                    if (response.IsSuccessStatusCode)
+                        return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                    else
+                    {
+                        ViewBag.Status = new Status(false, "An error occurred, search is currently unreachable");
+                        return View("Product/List", new List<Product>());
+                    }
+                }
                 else
-                    return View("ManagePanel", new Status(false, "Empty product list"));
+                {
+                    HttpResponseMessage response = await client.GetAsync("gateway/products");
+
+                    if (response.IsSuccessStatusCode)
+                        return View("Product/List", JsonConvert.DeserializeObject<IEnumerable<Product>>(await response.Content.ReadAsStringAsync()));
+                    else
+                    {
+                        ViewBag.Status = new Status(false, "Could not load products");
+                        return View("Product/List", new Status(false, "Empty product list"));
+                    }
+                }
             }
         }
 
@@ -287,20 +323,32 @@ namespace Client.Controllers
         //================================= Order =================================
 
         [HttpGet]
-        public async Task<IActionResult> OrderList(Status status)
+        public async Task<IActionResult> OrderList(Status status, string search)
         {
+            ViewBag.Search = search;
             if (!string.IsNullOrEmpty(status.Message))
                 ViewBag.Status = status;
 
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.GetAsync("gateway/orders");
-
-                if (response.IsSuccessStatusCode)
-                    return View("Order/List", JsonConvert.DeserializeObject<IEnumerable<Order>>(await response.Content.ReadAsStringAsync()));
+                if (!string.IsNullOrEmpty(search))
+                {
+                    HttpResponseMessage response = await client.GetAsync($"gateway/orders/{search}");
+                    if (response.IsSuccessStatusCode)
+                        return View("Order/List", new List<Order>() { JsonConvert.DeserializeObject<Order>(await response.Content.ReadAsStringAsync())! });
+                    else
+                        return View("Order/List", new List<Order>());
+                }
                 else
-                    return View("ManagePanel", new Status(false, "Empty order list"));
+                {
+                    HttpResponseMessage response = await client.GetAsync("gateway/orders");
+
+                    if (response.IsSuccessStatusCode)
+                        return View("Order/List", JsonConvert.DeserializeObject<IEnumerable<Order>>(await response.Content.ReadAsStringAsync()));
+                    else
+                        return View("ManagePanel", new Status(false, "Empty order list"));
+                }
             }
         }
 

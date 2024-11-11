@@ -71,6 +71,24 @@ namespace UserAPI.Controllers
             return user;
         }
 
+        // GET: api/Users/search/{search}
+        [HttpGet("search/{search}")]
+        public async Task<ActionResult<List<User>>> GetUserByUsername(string search)
+        {
+            if (_context.Users == null)
+                return NotFound();
+
+            var users = await _context.Users.Where(u => u.Username.ToLower().Contains(search.ToLower())).ToListAsync();
+
+            if (users == null)
+                return NotFound();
+            else
+                users.ForEach(u => u.Basket.ForEach(b => u.BasketIds.Add(b.Id)));
+
+            return users;
+        }
+
+
         // GET: api/Users/username/password
         [HttpGet("{username}/{password}")]
         public async Task<ActionResult<User>> GetUserByUsernamePassword(string username, string password)
