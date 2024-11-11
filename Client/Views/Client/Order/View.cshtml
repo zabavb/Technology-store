@@ -21,8 +21,6 @@
 <h1>Order confirmation</h1>
 <form asp-action="PostOrder" method="post">
     <div class="card card-body" style="width: 18rem; max-width: 320px">
-        <div class="validation" style="color: red" asp-validation-summary="ModelOnly"></div>
-        <h4 class="card-title">@Model.Id</h4>
         <h4 class="card-title">
             @foreach (var item in Model.Items)
             {
@@ -34,6 +32,8 @@
                 </div>
             }
         </h4>
+        <input class="form-control visually-hidden" asp-for="ItemsIds" />
+        <div class="validation" style="color: red" asp-validation-summary="ModelOnly"></div>
         <div class="mb-3 form-group">
             <label class="form-label" asp-for="Country"></label>
             <input class="form-control" asp-for="Country" />
@@ -49,12 +49,30 @@
             <input class="form-control" asp-for="Address" />
             <span style="color: red" asp-validation-for="Address"></span>
         </div>
-        <h4 class="card-title">@Model.ReceiverName <span class="mb-2 text-muted">@Model.ReceiverUsername</span></h4>
-        <p class="card-text">@Model.DeliveryDate.ToString()</p>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverUsername"></label>
+            <input class="form-control" asp-for="ReceiverUsername" readonly />
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverName"></label>
+            <input class="form-control" asp-for="ReceiverName" readonly />
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverEmail"></label>
+            <input class="form-control" asp-for="ReceiverEmail" readonly />
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="ReceiverPhone"></label>
+            <input class="form-control" asp-for="ReceiverPhone" readonly />
+        </div>
+        <div class="mb-3 form-group">
+            <label class="form-label" asp-for="DeliveryDate"></label>
+            <input class="form-control" asp-for="DeliveryDate" readonly />
+        </div>
     </div>
     
     <div class="form-group">
-        <a asp-action="DeleteOrder" asp-route-id="@Model.Id" class="btn btn-outline-dark">Cancel</a>
+        <a asp-action="Basket" class="btn btn-outline-dark">Cancel</a>
         <input type="submit" class="btn btn-outline-dark" value="Purchase" />
     </div>
 </form>

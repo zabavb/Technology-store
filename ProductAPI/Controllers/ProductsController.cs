@@ -56,7 +56,10 @@ namespace ProductAPI.Controllers
             if (_context.Products == null)
                 return NotFound();
 
-            var products = _context.Products.Where(p => ids.Contains(p.Id.ToString())).ToList();
+            List<Product> products = new();
+            ids.ToList().ForEach(id => {
+                products.Add(_context.Products.FirstOrDefaultAsync(p => p.Id.ToString().Equals(id)).Result!);
+            });
 
             if (products.Count == 0)
                 return NotFound();

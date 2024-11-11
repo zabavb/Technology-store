@@ -4,6 +4,7 @@ using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Packaging.Signing;
 using System.Reflection;
 using System.Text;
 
@@ -54,8 +55,11 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> Basket()
+        public async Task<IActionResult> Basket(Status status)
         {
+            if (!string.IsNullOrEmpty(status.Message))
+                ViewBag.Status = status;
+
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
@@ -68,8 +72,12 @@ namespace Client.Controllers
                     var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
                     if (products == null)
                         ViewBag.Status = new Status(false, "Failed to load basket");
-                    
-                    ViewBag.Ids = BuildStringIds(ids);
+
+                    StringBuilder str = new();
+                    ids.ToList().ForEach(id => str.Append($"{id},"));
+                    str.Remove(str.Length - 1, 1);
+
+                    ViewBag.Ids = str.ToString();
                     ViewBag.Sum = CountSum(products!);
                     
                     return View("Basket/View", products);
@@ -89,7 +97,7 @@ namespace Client.Controllers
             var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
 
             if (product == null)
-                return View("Product/List", new Status(false, "Could not find the product"));
+                return RedirectToAction("ProductList", new Status(false, "Could not find the product"));
 
             using (HttpClient client = new())
             {
@@ -98,9 +106,9 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/users/{User.Identity!.Name}/basket", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, $"The product '{product.Name}' has been added to basket"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product '{product.Name}' has been added to basket"));
                 else
-                    return View("Product/List", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
+                    return RedirectToAction("ProductList", new Status(true, $"The product '{product.Name}' has NOT been successfully added to basket"));
             }
         }
 
@@ -108,46 +116,49 @@ namespace Client.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteBasket(long id)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
-
-                if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, "Product has been successfully removed"));
-                else
-                    return View("Product/List", new Status(false, "Failed to remove product from the basket"));
-            }
+            if (await DeleteFromBasketAsync(id))
+                return RedirectToAction("Basket", new Status(true, "Product has been successfully removed"));
+            else
+                return RedirectToAction("Basket", new Status(false, "Failed to remove product from the basket"));
         }
 
         //================================= Order =================================
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> Order(long[] ids)
+        public async Task<IActionResult> Order(string ids, long id)
         {
             List<Product> products = new List<Product>();
-            double sum = 0;
-            foreach (var id in ids)
+            var list = ids.Split(",").ToList();
+            
+            if (ids.Length > 0)
+            {
+                foreach (var item in list)
+                {
+                    var product = await ControllersExtension.GetProductByIdAsync(long.Parse(item), BaseAddress);
+                    if (product == null)
+                    {
+                        ViewBag.Status = new Status(false, $"Could not find the product by id: {item}");
+                        continue;
+                    }
+
+                    products.Add(product);
+                }
+            }
+            else
             {
                 var product = await ControllersExtension.GetProductByIdAsync(id, BaseAddress);
-
                 if (product == null)
-                {
-                    ViewBag.Status = new Status(false, $"Could not find the product by id: {id}");
-                    continue;
-                }
+                    return RedirectToAction("Basket", new Status(false, $"Could not find the product by id: {id}"));
+
                 products.Add(product);
-                sum += product.Price;
             }
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
-            if (user == null) {
-                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("Product/List");
-            }
+            if (user == null)
+                return RedirectToAction("ProductList", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
 
-            ViewBag.Sum = sum;
+            ViewBag.Sum = CountSum(products);
             return View("Order/View", new OrderViewModel(products, user!));
         }
 
@@ -160,10 +171,13 @@ namespace Client.Controllers
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
-            {
-                ViewBag.Status = new Status(false, $"Could not find the user {User.Identity!.Name!}");
-                return View("Product/List");
-            }
+                return RedirectToAction("Basket", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
+
+            var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, null, model.ItemsIds);
+            if (products == null)
+                return RedirectToAction("Basket", new Status(false, $"Could not find any product"));
+
+            model.Items = products;
 
             using (HttpClient client = new())
             {
@@ -172,9 +186,13 @@ namespace Client.Controllers
                 HttpResponseMessage response = await client.PostAsync($"gateway/orders", content);
 
                 if (response.IsSuccessStatusCode)
-                    return View("Product/List", new Status(true, $"An order '{model.Id}' has been successfully made"));
+                {
+                    products.ForEach(p => DeleteFromBasketAsync(p.Id).Wait());
+
+                    return RedirectToAction("ProductList", new Status(true, $"Order has been successfully made"));
+                }
                 else
-                    return View("Product/List", new Status(true, $"An occurred while processing an order '{model.Id}'"));
+                    return RedirectToAction("ProductList", new Status(true, $"An error occurred while processing an order"));
             }
         }
 
@@ -187,7 +205,7 @@ namespace Client.Controllers
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/orders/{id}");
 
-                return RedirectToAction("Order/View", response.IsSuccessStatusCode ?
+                return RedirectToAction("Basket", response.IsSuccessStatusCode ?
                     new Status(true, "Order has been canceled") :
                     new Status(false, "Could not cancel the order"));
             }
@@ -215,8 +233,21 @@ namespace Client.Controllers
         {
             double sum = 0;
             products.ForEach(p => sum += p.Price);
-            
-            return sum;
+            double res = Math.Round(sum, 2);
+
+            return res;
+        }
+
+        [NonAction]
+        public async Task<bool> DeleteFromBasketAsync(long id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.DeleteAsync($"gateway/users/{User.Identity!.Name}/basket/{id}");
+
+                return response.IsSuccessStatusCode;
+            }
         }
     }
 }
