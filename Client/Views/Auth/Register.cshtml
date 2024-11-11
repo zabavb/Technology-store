@@ -5,64 +5,64 @@
 }
 
 <div class="container mt-5">
-    <h1 class="text-center">@ViewData["Title"]</h1>
+    <h1 class="text-center text-primary">@ViewData["Title"]</h1>
     <hr class="mb-4" />
 
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
-            <form asp-action="Register" asp-antiforgery="true" class="p-4 border rounded shadow-sm bg-light">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <form asp-action="Register" asp-antiforgery="true" class="p-4 border rounded shadow-lg bg-light">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
 
                 <div class="mb-3">
-                    <label asp-for="Username" class="form-label"></label>
-                    <input asp-for="Username" class="form-control" />
+                    <label asp-for="Username" class="form-label text-secondary">Username</label>
+                    <input asp-for="Username" class="form-control shadow-sm" />
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="FirstName" class="form-label"></label>
-                    <input asp-for="FirstName" class="form-control" />
+                    <label asp-for="FirstName" class="form-label text-secondary">First Name</label>
+                    <input asp-for="FirstName" class="form-control shadow-sm" />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="LastName" class="form-label"></label>
-                    <input asp-for="LastName" class="form-control" />
+                    <label asp-for="LastName" class="form-label text-secondary">Last Name</label>
+                    <input asp-for="LastName" class="form-control shadow-sm" />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Age" class="form-label"></label>
-                    <input asp-for="Age" class="form-control" />
+                    <label asp-for="Age" class="form-label text-secondary">Age</label>
+                    <input asp-for="Age" class="form-control shadow-sm" />
                     <span asp-validation-for="Age" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control" />
+                    <label asp-for="Email" class="form-label text-secondary">Email</label>
+                    <input asp-for="Email" class="form-control shadow-sm" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Phone" class="form-label"></label>
-                    <input asp-for="Phone" class="form-control" />
+                    <label asp-for="Phone" class="form-label text-secondary">Phone</label>
+                    <input asp-for="Phone" class="form-control shadow-sm" />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Password" class="form-label"></label>
-                    <input asp-for="Password" type="password" class="form-control" />
+                    <label asp-for="Password" class="form-label text-secondary">Password</label>
+                    <input asp-for="Password" type="password" class="form-control shadow-sm" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="ConfirmPassword" class="form-label"></label>
-                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                    <label asp-for="ConfirmPassword" class="form-label text-secondary">Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control shadow-sm" />
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Register</button>
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
                 </div>
             </form>
         </div>
