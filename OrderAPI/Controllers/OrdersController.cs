@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Library.Models;
 using OrderAPI.Models;
+using NuGet.Packaging.Signing;
 
 namespace OrderAPI.Controllers
 {
@@ -29,6 +30,16 @@ namespace OrderAPI.Controllers
                 return NotFound();
 
             return await _context.Orders.ToListAsync();
+        }
+
+        // GET: api/Orders/user/{receiverId}
+        [HttpGet("user/{receiverId}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByUserId(long receiverId)
+        {
+            if (_context.Orders == null)
+                return NotFound();
+
+            return await _context.Orders.Where(o => o.ReceiverId.Equals(receiverId)).ToListAsync();
         }
 
         // GET: api/Orders/5

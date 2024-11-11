@@ -126,6 +126,43 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
+        public async Task<IActionResult> OrderList(Status status)
+        {
+            if (!string.IsNullOrEmpty(status.Message))
+                ViewBag.Status = status;
+
+            var receiver = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
+            if (receiver == null)
+                return RedirectToAction("ProductList", new Status(false, "Could not find the user"));
+
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri(BaseAddress);
+                HttpResponseMessage response = await client.GetAsync($"gateway/orders/user/{receiver.Id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    List<Order> orders = (List<Order>)JsonConvert.DeserializeObject<IEnumerable<Order>>(await response.Content.ReadAsStringAsync())!;
+
+                    foreach (var order in orders)
+                    {
+                        order.Items = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, order.ItemsIds.ToArray(), null);
+                        order.Receiver = await ControllersExtension.GetUserByIdAsync(order.ReceiverId, BaseAddress);
+                    }
+                    
+                    return View("Order/List", orders);
+                }
+
+                else
+                {
+                    ViewBag.Status = new Status(false, "Could not load orders");
+                    return View("Order/List", new List<Order>());
+                }
+            }
+        }
+
+        [Authorize(Roles = "User, Moderator, Admin")]
+        [HttpGet]
         public async Task<IActionResult> Order(string ids, long id)
         {
             List<Product> products = new List<Product>();
