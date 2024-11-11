@@ -54,9 +54,7 @@ namespace OrderAPI.Controllers
             if (order == null)
                 return NotFound();
             else
-            {
                 order.Items.ForEach(i => order.ItemsIds.Add(i.Id));
-            }
 
             return order;
         }
