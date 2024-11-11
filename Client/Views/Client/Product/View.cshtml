@@ -8,21 +8,37 @@
 {
     @if (ViewBag.Status.IsSuccess)
     {
-        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
+        <div class="alert alert-success fixed-top mt-4" role="alert" style="z-index: 1050; right: 10px; top: 100px; width: auto;">
+            @ViewBag.Status.Message
+        </div>
     }
     else
     {
-        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
+        <div class="alert alert-danger fixed-top mt-4" role="alert" style="z-index: 1050; right: 10px; top: 100px; width: auto;">
+            @ViewBag.Status.Message
+        </div>
     }
 }
 
-<a asp-action="ProductList">Back</a>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body">
+                    <h2 class="card-title text-primary">@Model.Name</h2>
+                    <h5 class="card-subtitle mb-2 text-muted">@Model.Producer</h5>
+                    <p class="card-text">@Model.Details</p>
+                    <p class="card-text text-danger h4">$@Model.Price</p>
+                </div>
+            </div>
+        </div>
 
-<div class="card card-body" style="width: 18rem; max-width: 320px">
-    <h4 class="card-title">@Model.Name</h4>
-    <h6 class="card-subtitle mb-2 text-muted">@Model.Producer</h6>
-    <h4 class="card-title">$@Model.Price</h4>
-    <p class="card-text">@Model.Details</p>
-    <a asp-action="PostBasket" asp-route-id="@Model.Id" class="btn btn-outline-dark">To basket</a>
-    <a asp-action="Order" asp-route-id="@Model.Id" class="btn btn-outline-dark">Purchase</a>
+        <div class="col-lg-6">
+            <div class="d-flex flex-column">
+                <a asp-action="ProductList" class="btn btn-outline-secondary mb-3">Back to Products</a>
+                <a asp-action="PostBasket" asp-route-id="@Model.Id" class="btn btn-primary mb-3">Add to Basket</a>
+                <a asp-action="Order" asp-route-id="@Model.Id" class="btn btn-success mb-3">Purchase</a>
+            </div>
+        </div>
+    </div>
 </div>
