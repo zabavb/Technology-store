@@ -44,8 +44,11 @@ namespace Client.Models.Orders
         public OrderViewModel(List<Product> items, User receiver)
         {
             Items = items;
+            items.ForEach(i => ItemsIds += $"{i.Id},");
+            ItemsIds = ItemsIds.Remove(ItemsIds.Length - 1);
+
             ReceiverUsername = receiver.Username;
-            ReceiverName = receiver.FirstName + receiver.LastName;
+            ReceiverName = receiver.FirstName + " " + receiver.LastName;
             ReceiverEmail = receiver.Email;
             ReceiverPhone = receiver.Phone;
         }

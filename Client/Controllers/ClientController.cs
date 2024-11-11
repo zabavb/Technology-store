@@ -4,6 +4,7 @@ using Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Packaging.Signing;
 using System.Reflection;
 using System.Text;
 
@@ -69,7 +70,11 @@ namespace Client.Controllers
                     if (products == null)
                         ViewBag.Status = new Status(false, "Failed to load basket");
                     
-                    ViewBag.Ids = BuildStringIds(ids);
+                    StringBuilder str = new();
+                    ids.ToList().ForEach(id => str.Append($"{id},"));
+                    str.Remove(str.Length - 1, 1);
+
+                    ViewBag.Ids = str.ToString();
                     ViewBag.Sum = CountSum(products!);
                     
                     return View("Basket/View", products);
