@@ -1,68 +1,69 @@
-﻿@model Library.Models.User
+﻿@model Client.Models.Users.RegisterViewModel
 
 @{
-    ViewData["Title"] = "MyProfile";
+    ViewData["Title"] = "Register";
 }
 
-@if (ViewBag.Status != null)
-{
-    @if (ViewBag.Status.IsSuccess)
-    {
-        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
-    }
-    else
-    {
-        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
-    }
-}
+<div class="container mt-4">
+    <h1 class="text-center">Register</h1>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <form asp-action="Register" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-<h1>MyProfile</h1>
-<hr />
-<div>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Age)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Age)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-        <a asp-controller="Client" asp-action="GetBasket" class="btn btn-outline-dark">Basket</a>
-        <a asp-controller="Client" asp-action="GetOrder" class="btn btn-outline-dark">Order</a>
-    </dl>
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Age" class="form-label"></label>
+                    <input asp-for="Age" class="form-control" />
+                    <span asp-validation-for="Age" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
