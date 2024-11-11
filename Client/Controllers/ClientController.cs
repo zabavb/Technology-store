@@ -55,8 +55,11 @@ namespace Client.Controllers
 
         [Authorize(Roles = "User, Moderator, Admin")]
         [HttpGet]
-        public async Task<IActionResult> Basket()
+        public async Task<IActionResult> Basket(Status status)
         {
+            if (!string.IsNullOrEmpty(status.Message))
+                ViewBag.Status = status;
+
             using (HttpClient client = new())
             {
                 client.BaseAddress = new Uri(BaseAddress);
@@ -121,7 +124,7 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction("ProductList", new Status(true, "Product has been successfully removed"));
                 else
-                    return RedirectToAction("ProductList", new Status(false, "Failed to remove product from the basket"));
+                return RedirectToAction("Basket", new Status(false, "Failed to remove product from the basket"));
             }
         }
 
@@ -176,7 +179,13 @@ namespace Client.Controllers
 
             var user = await ControllersExtension.GetUserByUsernameAsync(User.Identity!.Name!, BaseAddress);
             if (user == null)
-                return RedirectToAction("ProductList", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
+                return RedirectToAction("Basket", new Status(false, $"Could not find the user {User.Identity!.Name!}"));
+
+            var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, null, model.ItemsIds);
+            if (products == null)
+                return RedirectToAction("Basket", new Status(false, $"Could not find any product"));
+
+            model.Items = products;
 
             using (HttpClient client = new())
             {
