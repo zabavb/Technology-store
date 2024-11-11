@@ -68,19 +68,25 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var ids = JsonConvert.DeserializeObject<long[]>(await response.Content.ReadAsStringAsync())!;
-                    
-                    var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
-                    if (products == null)
-                        ViewBag.Status = new Status(false, "Failed to load basket");
+                    if (ids.Length > 0)
+                    {
+                        var products = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, ids, null);
+                        if (products == null)
+                            ViewBag.Status = new Status(false, "Failed to load basket");
 
-                    StringBuilder str = new();
-                    ids.ToList().ForEach(id => str.Append($"{id},"));
-                    str.Remove(str.Length - 1, 1);
+                        StringBuilder str = new();
+                        ids.ToList().ForEach(id => str.Append($"{id},"));
+                        str.Remove(str.Length - 1, 1);
 
-                    ViewBag.Ids = str.ToString();
-                    ViewBag.Sum = CountSum(products!);
+                        ViewBag.Ids = str.ToString();
+                        ViewBag.Sum = CountSum(products!);
+
+                        return View("Basket/View", products);
+                    }
                     
-                    return View("Basket/View", products);
+                    ViewBag.Ids = 0;
+                    ViewBag.Sum = 0;
+                    return View("Basket/View", new List<Product>());
                 }
                 else
                 {
@@ -166,7 +172,7 @@ namespace Client.Controllers
         public async Task<IActionResult> Order(string ids, long id)
         {
             List<Product> products = new List<Product>();
-            var list = ids.Split(",").ToList();
+                var list = ids.Split(",").ToList();
             
             if (ids.Length > 0)
             {
@@ -242,8 +248,8 @@ namespace Client.Controllers
                 client.BaseAddress = new Uri(BaseAddress);
                 HttpResponseMessage response = await client.DeleteAsync($"gateway/orders/{id}");
 
-                return RedirectToAction("Basket", response.IsSuccessStatusCode ?
-                    new Status(true, "Order has been canceled") :
+                return RedirectToAction("OrderList", response.IsSuccessStatusCode ?
+                    new Status(true, "Order successfully canceled") :
                     new Status(false, "Could not cancel the order"));
             }
         }
