@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace Client.Controllers
 {
@@ -345,7 +346,17 @@ namespace Client.Controllers
                     HttpResponseMessage response = await client.GetAsync("gateway/orders");
 
                     if (response.IsSuccessStatusCode)
-                        return View("Order/List", JsonConvert.DeserializeObject<IEnumerable<Order>>(await response.Content.ReadAsStringAsync()));
+                    {
+                        List<Order> orders = (List<Order>)JsonConvert.DeserializeObject<IEnumerable<Order>>(await response.Content.ReadAsStringAsync())!;
+
+                        foreach (var order in orders)
+                        {
+                            order.Items = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, order.ItemsIds.ToArray(), null);
+                            order.Receiver = await ControllersExtension.GetUserByIdAsync(order.ReceiverId, BaseAddress);
+                        }
+
+                        return View("Order/List", orders);
+                    }
                     else
                         return View("ManagePanel", new Status(false, "Empty order list"));
                 }
@@ -359,6 +370,9 @@ namespace Client.Controllers
                 ViewBag.Status = status;
 
             var order = await GetOrderByIdAsync(id);
+
+            order.Items = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, order.ItemsIds.ToArray(), null);
+            order.Receiver = await ControllersExtension.GetUserByIdAsync(order.ReceiverId, BaseAddress);
 
             if (order == null)
                 ViewBag.Status = new Status(false, "Could not find the order");
