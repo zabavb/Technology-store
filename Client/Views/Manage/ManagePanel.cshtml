@@ -1,15 +1,16 @@
 ﻿<div class="container-fluid d-flex flex-column vh-100">
     <main class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
-        <a asp-controller="Client" asp-action="ProductList" class="btn btn-outline-secondary mb-4">Quit panel</a>
-
         <div class="d-flex justify-content-around flex-wrap w-75">
-            <a asp-action="UserList" class="btn btn-success shadow m-3 p-4 text-uppercase" style="min-width: 150px;">
+            <a asp-controller="Client" asp-action="ProductList" class="btn btn-outline-secondary shadow m-4 p-4 text-uppercase" style="min-width: 150px;">
+                Quit panel
+            </a>
+            <a asp-action="UserList" class="btn btn-primary shadow m-4 p-4 text-uppercase" style="min-width: 200px;">
                 Users
             </a>
-            <a asp-action="ProductList" class="btn btn-primary shadow m-3 p-4 text-uppercase" style="min-width: 150px;">
+            <a asp-action="ProductList" class="btn btn-primary shadow m-4 p-4 text-uppercase" style="min-width: 200px;">
                 Products
             </a>
-            <a asp-action="OrderList" class="btn btn-success shadow m-3 p-4 text-uppercase" style="min-width: 150px;">
+            <a asp-action="OrderList" class="btn btn-primary shadow m-4 p-4 text-uppercase" style="min-width: 200px;">
                 Orders
             </a>
         </div>
