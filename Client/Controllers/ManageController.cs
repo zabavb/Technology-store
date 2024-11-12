@@ -69,7 +69,10 @@ namespace Client.Controllers
             if (user == null)
                 ViewBag.Status = new Status(false, "Could not find the user");
             else
-                user.Basket = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, user.BasketIds.ToArray(), null);
+            {
+                if (user.BasketIds.Count() > 0)
+                    user.Basket = await ControllersExtension.GetProductsByIdsAsync(BaseAddress, user.BasketIds.ToArray(), null);
+            }
 
             return View("User/View", user);
         }

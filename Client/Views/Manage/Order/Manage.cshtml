@@ -26,7 +26,7 @@
 
 <a asp-action="OrderList" class="btn btn-outline-secondary">Back</a>
 
-<div class="container-fluid vh-100 d-flex flex-column align-items-center pt-5">
+<div class="container-fluid d-flex flex-column align-items-center pt-5">
     @if (@ViewBag.IsPost)
     {
         <h1 class="text-center text-primary mb-4">Create New Order</h1>
@@ -57,7 +57,7 @@
         string action = ViewBag.IsPost ? "PostOrder" : "PutOrder";
     }
 
-    <div class="card border rounded-1 card-body mb-4" style="background-color: #f8f9fc;">
+    <div class="card border rounded-1 card-body mb-1" style="background-color: #f8f9fc;">
         <form asp-action="@action" method="post">
             <div class="validation text-danger mb-3" asp-validation-summary="ModelOnly"></div>
             <div class="row g-3">
