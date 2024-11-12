@@ -5,42 +5,54 @@
 }
 
 @if (ViewBag.Status != null)
+
 {
-    @if (ViewBag.Status.IsSuccess)
-    {
-        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
-    }
-    else
-    {
-        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
-    }
+    <div class="alert @(ViewBag.Status.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show d-flex align-items-center position-fixed"
+         style="top: 70px; right: 20px; z-index: 1050; min-width: 250px;" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
+            @if (ViewBag.Status.IsSuccess)
+            {
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.354 10.354a.5.5 0 0 0 .707 0l3-3a.5.5 0 1 0-.708-.708L7 9.293 5.646 7.646a.5.5 0 0 0-.708.708l1.5 1.5z" />
+            }
+
+            else
+            {
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 0 8a8 8 0 0 0 8 0zM7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zm-.1-5.995a.905.905 0 0 1 .2-.395.715.715 0 0 1 .588-.295.715.715 0 0 1 .588.295.905.905 0 0 1 .2.395c.057.28.083.62.08.995h-.995c-.002-.38.023-.72.08-.995z" />
+            }
+        </svg>
+        <div>@ViewBag.Status.Message</div>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
-<a asp-action="ProductList">Back</a>
+<a asp-action="ProductList" class="btn btn-outline-secondary">Back</a>
 
-<h1>Orders</h1>
-<div class="d-flex flex-wrap">
+<h1 class="text-center text-primary mb-4">Order</h1>
+
+<div class="d-flex flex-wrap justify-content-around">
     @foreach (var item in Model)
     {
-        <div class="card card-body" style="width: 18rem; max-width: 320px">
-            <h4 class="card-title">@item.Id</h4>
-            <h6 class="card-subtitle mb-2 text-muted">@item.Country, @item.Locality, @item.Address</h6>
-            <h4 class="card-title">
-                @foreach (var product in item.Items)
-                {
-                    if (!product.Equals(item.Items.Last()))
-                    {
-                        <span>@product.Name, </span>
-                    }
-                    else
-                    {
-                        <span>@product.Name</span>
-                    }
-                }
-            </h4>
-            <h4 class="card-title">@item.Receiver.FirstName @item.Receiver.LastName <span class="mb-2 text-muted">@item.Receiver.Username</span></h4>
-            <p class="card-text">@item.DeliveryDate.ToString()</p>
-            <a asp-action="DeleteOrder" asp-route-id="@item.Id" class="btn btn-outline-dark">Cancel</a>
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border rounded-1" style="background-color: #f9fafb;">
+                <div class="card-body">
+                    <h4 class="card-title text-primary mb-3">@item.Id</h4>
+                    <h6 class="card-subtitle mb-3 text-muted">@item.Country, @item.Locality, @item.Address</h6>
+                    <hr />
+                    <h4 class="card-title mb-3">
+                        @foreach (var product in item.Items)
+                        {
+                            <span>@product.Name@if (!product.Equals(item.Items.Last()))
+                                {
+                                    <text>, </text>
+                                } </span>
+                        }
+                    </h4>
+                    <hr />
+                    <h4 class="card-title mb-3">@item.Receiver.FirstName @item.Receiver.LastName <span class="mb-2 text-muted">@item.Receiver.Username</span></h4>
+                    <p class="card-text text-success mb-3">@item.DeliveryDate.ToString()</p>
+                    <a asp-action="DeleteOrder" asp-route-id="@item.Id" class="btn btn-outline-danger rounded-1">Cancel</a>
+                </div>
+            </div>
         </div>
     }
 </div>

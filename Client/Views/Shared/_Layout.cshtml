@@ -11,9 +11,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Client" asp-action="ProductList">Technology store</a>
+                <a class="navbar-brand text-primary" asp-controller="Client" asp-action="ProductList">Technology store</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -23,26 +23,26 @@
                         @if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Manage" asp-action="ManagePanel">Manage panel</a>
+                                <a class="btn btn-outline-danger" asp-controller="Manage" asp-action="ManagePanel">Manage panel</a>
                             </li>
                         }
                     </ul>
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="navbar-nav">
                         @if (User.Identity != null)
                         {
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Client" asp-action="Basket">Basket</a>
+                                    <a class="nav-link text-success" asp-controller="Client" asp-action="Basket">Basket</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Client" asp-action="OrderList">History</a>
+                                    <a class="nav-link text-success" asp-controller="Client" asp-action="OrderList">History</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark btn" asp-controller="Auth" asp-action="MyProfile">@User.Identity.Name</a>
+                                    <a class="nav-link text-primary" asp-controller="Auth" asp-action="MyProfile">@User.Identity.Name</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="btn btn-outline-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
+                                    <a class="nav-link text-black" asp-controller="Auth" asp-action="Logout">Logout</a>
                                 </li>
                             }
                         }
@@ -51,10 +51,10 @@
                             @if (!User.Identity.IsAuthenticated)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                                    <a class="nav-link text-primary" asp-controller="Auth" asp-action="Login">Login</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>
+                                    <a class="nav-link text-success" asp-controller="Auth" asp-action="Register">Register</a>
                                 </li>
                             }
                         }
@@ -63,15 +63,19 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container pb-5">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container"></div>
+    <footer class="border-top footer text-muted fixed-bottom">
+        <div class="container">
+            <p class="text-center my-2">© 2024 Technology Store</p>
+        </div>
     </footer>
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

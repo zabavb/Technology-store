@@ -1,48 +1,63 @@
 ﻿@model IEnumerable<Library.Models.Product>
 
 @{
-    ViewData["Title"] = "Manage products";
+    ViewData["Title"] = "Manage Products";
 }
 
 @if (ViewBag.Status != null)
 {
-    @if (ViewBag.Status.IsSuccess)
-    {
-        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
-    }
-    else
-    {
-        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
-    }
+    <div class="alert @(ViewBag.Status.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show d-flex align-items-center position-fixed"
+         style="top: 70px; right: 20px; z-index: 1050; min-width: 250px;" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
+            @if (ViewBag.Status.IsSuccess)
+            {
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.354 10.354a.5.5 0 0 0 .707 0l3-3a.5.5 0 1 0-.708-.708L7 9.293 5.646 7.646a.5.5 0 0 0-.708.708l1.5 1.5z" />
+            }
+            else
+            {
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 0 8a8 8 0 0 0 8 0zM7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zm-.1-5.995a.905.905 0 0 1 .2-.395.715.715 0 0 1 .588-.295.715.715 0 0 1 .588.295.905.905 0 0 1 .2.395c.057.28.083.62.08.995h-.995c-.002-.38.023-.72.08-.995z" />
+            }
+        </svg>
+        <div>@ViewBag.Status.Message</div>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
-<a asp-action="ManagePanel">Back to panel</a>
+<a asp-action="ManagePanel" class="btn btn-outline-secondary">Back to panel</a>
 
-<h1>Products</h1>
-<a asp-action="PostProduct" class="btn btn-outline-dark">Add new product</a>
-<div class="mb-3 form-group">
-    <form asp-action="ProductList" method="get">
-        <input type="text" name="search" placeholder="Search products by name ..." class="form-control" value="@ViewBag.Search" />
-        <button type="submit" class="btn btn-outline-dark">Search</button>
-    </form>
-</div>
+<h1 class="text-center text-primary mb-4">Products</h1>
+<a asp-action="PostProduct" class="btn btn-outline-dark mb-4">Add New Product</a>
+
+<form asp-action="ProductList" method="get" class="input-group mb-4">
+    <input type="text" name="search" placeholder="Search products by name ..." class="form-control" value="@ViewBag.Search" />
+    <button type="submit" class="btn btn-outline-secondary">Search</button>
+</form>
 
 @if (Model.Count() == 0)
 {
-    <h4>Empty</h4>
+    <h4 class="text-center">No products found</h4>
 }
 else
 {
-    <div class="d-flex flex-wrap">
+    <div class="d-flex flex-wrap justify-content-around">
         @foreach (var item in Model)
         {
-            <div class="card card-body" style="width: 18rem; max-width: 320px">
-                <h4 class="card-title">@item.Name</h4>
-                <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
-                <h4 class="card-title">$@item.Price</h4>
-                <p class="card-text">@item.Details</p>
-                <a asp-action="Product" asp-route-id="@item.Id" class="btn btn-outline-dark">View</a>
-                <a asp-action="DeleteProduct" asp-route-id="@item.Id" class="btn btn-outline-dark">Remove</a>
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-1" style="background-color: #f9fafb;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <a asp-action="Product" asp-route-id="@item.Id" class="text-decoration-none">@item.Name</a>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
+                        <p class="card-text">@item.Details</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-success h4">$@item.Price</span>
+                            <div>
+                                <a asp-action="DeleteProduct" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         }
     </div>

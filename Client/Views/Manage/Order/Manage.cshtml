@@ -2,108 +2,125 @@
 @model Client.Models.Orders.OrderViewModel
 
 @{
-    ViewData["Title"] = "Manage order" + @Model.Id;
+    ViewData["Title"] = "Manage Order " + @Model.Id;
 }
 
 @if (ViewBag.Status != null)
 {
-    @if (ViewBag.Status.IsSuccess)
-    {
-        <div class="alert alert-success" role="alert">@ViewBag.Status.Message</div>
-    }
-    else
-    {
-        <div class="alert alert-danger" role="alert">@ViewBag.Status.Message</div>
-    }
-}
-
-@if (ViewBag.IsPost)
-{
-    <h2>Create new order</h2>
-}
-else
-{
-    <h2>Update order: @Model.Id</h2>
-
-    <div class="d-flex flex-wrap">
-        @foreach (var item in Model.Items)
-        {
-            <div class="card card-body" style="width: 18rem; max-width: 320px">
-                <h4 class="card-title">@item.Name</h4>
-                <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
-                <h4 class="card-title">$@item.Price</h4>
-                <p class="card-text">@item.Details</p>
-            </div>
-        }
+    <div class="alert @(ViewBag.Status.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show d-flex align-items-center position-fixed"
+         style="top: 70px; right: 20px; z-index: 1050; min-width: 250px;" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
+            @if (ViewBag.Status.IsSuccess)
+            {
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.354 10.354a.5.5 0 0 0 .707 0l3-3a.5.5 0 1 0-.708-.708L7 9.293 5.646 7.646a.5.5 0 0 0-.708.708l1.5 1.5z" />
+            }
+            else
+            {
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 0 8a8 8 0 0 0 8 0zM7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zm-.1-5.995a.905.905 0 0 1 .2-.395.715.715 0 0 1 .588-.295.715.715 0 0 1 .588.295.905.905 0 0 1 .2.395c.057.28.083.62.08.995h-.995c-.002-.38.023-.72.08-.995z" />
+            }
+        </svg>
+        <div>@ViewBag.Status.Message</div>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-@{
-    string action = string.Empty;
+<a asp-action="OrderList" class="btn btn-outline-secondary">Back</a>
 
-    if (ViewBag.IsPost)
-        action = "PostOrder";
+<div class="container-fluid d-flex flex-column align-items-center pt-5">
+    @if (@ViewBag.IsPost)
+    {
+        <h1 class="text-center text-primary mb-4">Create New Order</h1>
+    }
     else
-        action = "PutOrder";
-}
+    {
+        <h1 class="text-center text-primary mb-4">Update Order: @Model.Id</h1>
+    }
 
-<form asp-action="@action" method="post">
-    <div class="validation" style="color: red" asp-validation-summary="ModelOnly"></div>
-    <div>
-        <input class="visually-hidden" asp-for="Id" />
-        @if (ViewBag.IsPost)
-        {
-            <div class="mb-3 form-group">
-                <label class="form-label" asp-for="ItemsIds"></label>
-                <input class="form-control" asp-for="ItemsIds" />
-                <span style="color: red" asp-validation-for="ItemsIds"></span>
-            </div>
-        }
-        @if (ViewBag.IsPost)
-        {
-            <div class="mb-3 form-group">
-                <label class="form-label" asp-for="ReceiverUsername"></label>
-                <input class="form-control" asp-for="ReceiverUsername" />
-                <span style="color: red" asp-validation-for="ReceiverUsername"></span>
-            </div>
-        }
-        else
-        {
-            <div class="mb-3 form-group">
-                <label class="form-label" asp-for="ReceiverUsername"></label>
-                <input class="form-control" asp-for="ReceiverUsername" readonly />
-            </div>
-            <div class="mb-3 form-group">
-                <label class="form-label" asp-for="ReceiverName"></label>
-                <input class="form-control" asp-for="ReceiverName" readonly />
-            </div>
-            <div class="mb-3 form-group">
-                <label class="form-label" asp-for="ReceiverEmail"></label>
-                <input class="form-control" asp-for="ReceiverEmail" readonly />
-            </div>
-            <div class="mb-3 form-group">
-                <label class="form-label" asp-for="ReceiverPhone"></label>
-                <input class="form-control" asp-for="ReceiverPhone" readonly />
-            </div>
-        }
-        <div class="mb-3 form-group">
-            <label class="form-label" asp-for="Country"></label>
-            <input class="form-control" asp-for="Country" />
-            <span style="color: red" asp-validation-for="Country"></span>
+    @if (!ViewBag.IsPost)
+    {
+        <div class="d-flex flex-wrap gap-3 mb-4 justify-content-center">
+            @foreach (var item in Model.Items)
+            {
+                <div class="card shadow-sm border rounded-3" style="width: 18rem; max-width: 320px;">
+                    <div class="card-body">
+                        <h4 class="card-title">@item.Name</h4>
+                        <h6 class="card-subtitle mb-2 text-muted">@item.Producer</h6>
+                        <h5 class="text-success">$@item.Price</h5>
+                        <p class="card-text">@item.Details</p>
+                    </div>
+                </div>
+            }
         </div>
-        <div class="mb-3 form-group">
-            <label class="form-label" asp-for="Locality"></label>
-            <input class="form-control" asp-for="Locality" />
-            <span style="color: red" asp-validation-for="Locality"></span>
-        </div>
-        <div class="mb-3 form-group">
-            <label class="form-label" asp-for="Address"></label>
-            <input class="form-control" asp-for="Address" />
-            <span style="color: red" asp-validation-for="Address"></span>
-        </div>
+    }
 
-        <div class="form-group">
-            <input type="submit" class="btn btn-outline-dark" value="Confirm" />
-        </div>
+    @{
+        string action = ViewBag.IsPost ? "PostOrder" : "PutOrder";
+    }
+
+    <div class="card border rounded-1 card-body mb-1" style="background-color: #f8f9fc;">
+        <form asp-action="@action" method="post">
+            <div class="validation text-danger mb-3" asp-validation-summary="ModelOnly"></div>
+            <div class="row g-3">
+                <input type="hidden" asp-for="Id" />
+                @if (ViewBag.IsPost)
+                {
+                    <div class="col-12">
+                        <label class="form-label" asp-for="ItemsIds"></label>
+                        <input class="form-control border rounded-1" asp-for="ItemsIds" />
+                        <span class="text-danger" asp-validation-for="ItemsIds"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" asp-for="ReceiverUsername"></label>
+                        <input class="form-control border rounded-1" asp-for="ReceiverUsername" />
+                        <span class="text-danger" asp-validation-for="ReceiverUsername"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-12">
+                        <label class="form-label" asp-for="ReceiverUsername"></label>
+                        <input class="form-control border rounded-1" asp-for="ReceiverUsername" readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" asp-for="ReceiverName"></label>
+                        <input class="form-control border rounded-1" asp-for="ReceiverName" readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" asp-for="ReceiverEmail"></label>
+                        <input class="form-control border rounded-1" asp-for="ReceiverEmail" readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" asp-for="ReceiverPhone"></label>
+                        <input class="form-control border rounded-1" asp-for="ReceiverPhone" readonly />
+                    </div>
+                }
+
+                <div class="col-12">
+                    <label class="form-label" asp-for="Country"></label>
+                    <input class="form-control border rounded-1" asp-for="Country" />
+                    <span class="text-danger" asp-validation-for="Country"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" asp-for="Locality"></label>
+                    <input class="form-control border rounded-1" asp-for="Locality" />
+                    <span class="text-danger" asp-validation-for="Locality"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" asp-for="Address"></label>
+                    <input class="form-control border rounded-1" asp-for="Address" />
+                    <span class="text-danger" asp-validation-for="Address"></span>
+                </div>
+
+                <div class="form-group text-center">
+                    <input type="submit" class="btn btn-primary rounded-1" value="Confirm" />
+                </div>
+            </div>
+        </form>
     </div>
-</form>
+</div>
